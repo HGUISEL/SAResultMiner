@@ -22,16 +22,17 @@ public class Clone {
 		}
 		
 		try {
+			System.out.println("INFO: Clone Start");
 			long start = System.currentTimeMillis();
 			File clonePath = new File(newDir.toString() + File.separator + projectName);
 			if(!clonePath.exists()) {
 				git = Git.cloneRepository().setURI(gitAddress).setDirectory(clonePath).call();
 			} else {
 				git = Git.open(clonePath);				 
-				System.out.println("Clone Skip : The Target Project was already cloned");
+				System.out.println("INFO: Clone Skip, The Target Project was already cloned");
 			}
 			long end = System.currentTimeMillis();
-			System.out.println("Clone Finished" + "(" + (end-start)/1000 + " sec.)");
+			System.out.println("INFO: Clone Finished" + "(" + (end-start)/1000 + " sec.)");
 			clonedPath = clonePath.toString();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -52,6 +53,10 @@ public class Clone {
 		String projectName = gitName.split("\\.")[0];
 		
 		return projectName;
+	}
+	
+	public String getClonedPath() {
+		return clonedPath;
 	}
 	
 }

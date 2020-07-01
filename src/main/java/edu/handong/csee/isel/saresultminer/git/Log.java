@@ -28,6 +28,7 @@ public class Log {
 			
 			//first commit in index 0
 			Collections.reverse(commitIds);
+			
 		
 		} catch (NoHeadException e) {
 			// TODO Auto-generated catch block
@@ -38,5 +39,9 @@ public class Log {
 		}
 		
 		return commitIds;
+	}
+	
+	public String getLatestCommitId() {
+		return latestCommitId;
 	}
 }
