@@ -12,7 +12,7 @@ build
 
 gradlew
 gradlew.bat
-settomg.gradle
+settings.gradle
 
 .settings
 bin
