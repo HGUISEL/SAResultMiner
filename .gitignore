@@ -2,7 +2,7 @@
 .gradle
 
 # Ignore Gradle build output directory
-buil
+build
 
 .DS_Store
 .classpath
@@ -14,3 +14,6 @@ gradlew
 gradlew.bat
 settomg.gradle
 
+.settings
+bin
+gradle/wrapper
