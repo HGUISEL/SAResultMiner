@@ -41,21 +41,16 @@ public class Diff {
 			    	else
 			    		changedFiles += clonedPath + "/" + entry.getNewPath();
 			    }
-			    System.out.println( changedPath );
-			    
+//			    System.out.println( changedPath );			    
 			}
 
 		} catch (RevisionSyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (AmbiguousObjectException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IncorrectObjectTypeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

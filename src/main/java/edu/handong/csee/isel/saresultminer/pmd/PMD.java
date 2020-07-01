@@ -2,22 +2,21 @@ package edu.handong.csee.isel.saresultminer.pmd;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteWatchdog;
 
-public class PMD {
-	
+public class PMD {	
 	String pmdCmd = "";
+	String reportPath = "";
 	
 	public PMD(String pmdCmd) {
 		this.pmdCmd = pmdCmd;
 	}
 	
-	public void execute(String commitID, String dirPath, int cnt) {		
+	public void execute(String rule, String commitID, String dirPath, int cnt) {		
 		File newDir = new File("./PMDReports");
 		if(!newDir.exists()) {
 			newDir.mkdir();
@@ -30,7 +29,7 @@ public class PMD {
 		cmdLine.addArgument("-d");
 		cmdLine.addArgument(dirPath);
 		cmdLine.addArgument("-R");
-		cmdLine.addArgument("category/java/errorprone.xml/NullAssignment");
+		cmdLine.addArgument(rule);
 		cmdLine.addArgument("-reportfile");
 		cmdLine.addArgument("./PMDReports/"+ cnt + "_" + commitID+".csv");
 		DefaultExecutor executor = new DefaultExecutor();
@@ -45,6 +44,7 @@ public class PMD {
 			e.printStackTrace();
 		}
 		long end = System.currentTimeMillis();
+		reportPath = "./PMDReports/"+ cnt + "_" + commitID+ ".csv";
 		System.out.println("INFO: PMD Report Is Generated Commit ID: " + commitID + "(" + (end-start)/1000 + " sec.)");
 	}
 	
@@ -76,6 +76,11 @@ public class PMD {
 			e.printStackTrace();
 		}
 		long end = System.currentTimeMillis();
+		reportPath = "./PMDReports/"+ cnt + "_" + commitID+ ".csv";
 		System.out.println("INFO: PMD Report Is Generated Commit ID: " + commitID + "(" + (end-start)/1000 + " sec.)");
+	}
+	
+	public String getReportPath() {
+		return reportPath;
 	}
 }

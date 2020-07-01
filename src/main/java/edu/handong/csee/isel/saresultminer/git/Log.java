@@ -11,8 +11,8 @@ import org.eclipse.jgit.revwalk.RevCommit;
 public class Log {
 	String latestCommitId = "";
 	
-	public ArrayList<String> getAllCommitID(Git git) {
-		ArrayList<String> commitIds = new ArrayList<>();
+	public ArrayList<Commit> getAllCommitID(Git git) {
+		ArrayList<Commit> commits = new ArrayList<>();
 
 		try {
 			Iterable<RevCommit> logs = git.log().call();
@@ -23,11 +23,12 @@ public class Log {
 					latestCommitId += commit.getName();				
 					first++;
 				}
-				commitIds.add(commit.getName());								
+				Commit info = new Commit(commit.getName(), "" + commit.getCommitTime());
+				commits.add(info);								
 			}
 			
 			//first commit in index 0
-			Collections.reverse(commitIds);
+			Collections.reverse(commits);
 			
 		
 		} catch (NoHeadException e) {
@@ -38,7 +39,7 @@ public class Log {
 			e.printStackTrace();
 		}
 		
-		return commitIds;
+		return commits;
 	}
 	
 	public String getLatestCommitId() {
