@@ -2,4 +2,15 @@
 .gradle
 
 # Ignore Gradle build output directory
-build
+buil
+
+.DS_Store
+.classpath
+.gitattributes
+.project
+.csv
+
+gradlew
+gradlew.bat
+settomg.gradle
+
