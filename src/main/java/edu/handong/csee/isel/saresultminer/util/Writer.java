@@ -16,6 +16,7 @@ import edu.handong.csee.isel.saresultminer.pmd.Alarm;
 public class Writer {
 	String changedFilesPath = "";
 	int detectionIdx = 0;
+	String resultPath = "./Result.csv";
 	
 	public String writeChangedFiles(String changedFiles, String commitID) {
 		File newDir = new File("./ChangedFilesList");
@@ -74,5 +75,9 @@ public class Writer {
 		long end = System.currentTimeMillis();
 		
 		System.out.println("INFO: Finish to Initialize Result File (" + (end - start)/1000 + " sec.)");
+	}
+	
+	public String getResult() {
+		return resultPath;
 	}
 }

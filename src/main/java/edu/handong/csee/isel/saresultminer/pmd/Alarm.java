@@ -13,6 +13,11 @@ public class Alarm {
 		}
 	}
 	
+	public Alarm(String path, String lineNum) {
+		dir = path;
+		this.lineNum = lineNum;
+	}
+	
 	public String getDir() {
 		return dir;
 	}

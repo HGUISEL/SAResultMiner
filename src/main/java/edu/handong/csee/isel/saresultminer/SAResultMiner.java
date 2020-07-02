@@ -80,7 +80,7 @@ public class SAResultMiner {
 		int logSize = commits.size();
 		
 		//repeat until checking all commits
-		for(int i = 1; i <= 10; i ++) {
+		for(int i = 1; i <= 2; i ++) {
 			//checkout current +1
 			gitCheckout.checkoutToMaster(git);
 			gitCheckout.checkout(git, commits.get(i).getID(), i);
@@ -106,8 +106,11 @@ public class SAResultMiner {
 			//report comparison	with a result file{
 			//read result's alarm [E] [H]
 			ArrayList<Alarm> alarmsInResult = new ArrayList<>();
-			alarmsInResult.addAll(reader.readResult());
-			
+			alarmsInResult.addAll(reader.readResult(writer.getResult()));
+			System.out.println("Old Alarm: ");
+			for(Alarm temp :  alarmsInResult) {
+				System.out.println(temp.getDir() + " " + temp.getLineNum());
+			}
 			//first, check directory			
 			alarmsInResult = comparator.compareDir(alarmsInResult, alarms);
 			
