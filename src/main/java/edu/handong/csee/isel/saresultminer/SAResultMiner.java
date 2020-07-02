@@ -1,6 +1,8 @@
 package edu.handong.csee.isel.saresultminer;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.jgit.api.Git;
 
@@ -70,29 +72,45 @@ public class SAResultMiner {
 		alarms.addAll(reader.readReportFile(pmd.getReportPath()));
 		
 		//write result form and first detection
-		//"Detection ID", "Latest Commit ID", "PMD Version", "Rule Name", "File Path", "VIC ID", "VIC Date", "VIC Line Num.", "Latest Detection Commit ID", "LDC ID Date", "VFC ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", "Original Code", "Fix Code", "Really Fixed?"
+		//-Detection ID +Latest Commit ID +PMD Version +Rule Name +File Path +VIC ID +VIC Date +VIC Line Num. -Latest Detection Commit ID -LDC LineNum -LDC Date -VFC ID -VFC Date -VFC Line Num. -Fixed Period(day) +Original Code -Fix Code -Really Fixed?
 		writer.initResult(alarms, latestCommitID, pmdVersion, rule, commits.get(0).getID(), commits.get(0).getTime());
 		
 		//get all commit size for repeating
 		int logSize = commits.size();
 		
 		//repeat until checking all commits
-		for(int i = 1; i <= 1; i ++) {
+		for(int i = 1; i <= 10; i ++) {
 			//checkout current +1
 			gitCheckout.checkoutToMaster(git);
 			gitCheckout.checkout(git, commits.get(i).getID(), i);
 			
-			//diff & get list of files which were changed
-			String changedFiles = gitDiff.diff(git, gitClone.getClonedPath());
+			//diff: get list of files which were changed
+			String changedFiles = gitDiff.getChangedFilesList(git, gitClone.getClonedPath());
+			
+			//diff: get code of files which were changed
+			try {
+				gitDiff.diffCommit(git, commits.get(i).getID());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			
 			//write a file which contains a comma delimited changed files list
 			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID());
-			
-			//apply pmd to changed files
+						
+			//apply pmd to changed files			
 			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i);
+			alarms = new ArrayList<Alarm>();
+			alarms.addAll(reader.readReportFile(pmd.getReportPath()));			
+						
+			//report comparison	with a result file				
+			//read result's alarm [E] [H]
 			
-			//report comparison
+			//first, check directory
 			
+			//second, check added codes and calculate line num
+			
+			//third, check line num
+						
 			//write updated pmd report and its codes
 			
 			//updated modified report contents
