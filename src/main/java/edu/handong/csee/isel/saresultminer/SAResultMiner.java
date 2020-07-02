@@ -2,7 +2,6 @@ package edu.handong.csee.isel.saresultminer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.eclipse.jgit.api.Git;
 
@@ -13,6 +12,7 @@ import edu.handong.csee.isel.saresultminer.git.Diff;
 import edu.handong.csee.isel.saresultminer.git.Log;
 import edu.handong.csee.isel.saresultminer.pmd.Alarm;
 import edu.handong.csee.isel.saresultminer.pmd.PMD;
+import edu.handong.csee.isel.saresultminer.util.Comparator;
 import edu.handong.csee.isel.saresultminer.util.Reader;
 import edu.handong.csee.isel.saresultminer.util.Writer;
 
@@ -36,6 +36,7 @@ public class SAResultMiner {
 		//utils instances
 		Writer writer = new Writer();
 		Reader reader = new Reader();
+		Comparator comparator = new Comparator();
 
 		
 		//read input
@@ -102,18 +103,26 @@ public class SAResultMiner {
 			alarms = new ArrayList<Alarm>();
 			alarms.addAll(reader.readReportFile(pmd.getReportPath()));			
 						
-			//report comparison	with a result file				
+			//report comparison	with a result file{
 			//read result's alarm [E] [H]
+			ArrayList<Alarm> alarmsInResult = new ArrayList<>();
+			alarmsInResult.addAll(reader.readResult());
 			
-			//first, check directory
+			//first, check directory			
+			alarmsInResult = comparator.compareDir(alarmsInResult, alarms);
 			
-			//second, check added codes and calculate line num
 			
-			//third, check line num
-						
+			//second, check added codes and calculate line num						
+			alarmsInResult = comparator.compareCode(alarmsInResult, alarms);				
+			if(isMoved) {
+				writer.appendResult();
+			}
+			
+			//third, check line num}
+			alarmsInResult = comparator.compareLine(alarmsInResult, alarms);			
+			
 			//write updated pmd report and its codes
-			
-			//updated modified report contents
+			writer.appendResult();					
 		}								
 	}	
 }
