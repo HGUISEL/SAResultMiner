@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jgit.api.Git;
 
+import edu.handong.csee.isel.saresultminer.git.ChangeInfo;
 import edu.handong.csee.isel.saresultminer.git.Checkout;
 import edu.handong.csee.isel.saresultminer.git.Clone;
 import edu.handong.csee.isel.saresultminer.git.Commit;
@@ -26,6 +27,7 @@ public class SAResultMiner {
 		Git git;
 		String targetGitAddress = "";
 		ArrayList<Commit> commits = new ArrayList<>();
+		ArrayList<ChangeInfo> changeInfo = new ArrayList<>();
 		
 		//pmd instance
 		//@param pmd command location
@@ -88,44 +90,43 @@ public class SAResultMiner {
 			//diff: get list of files which were changed
 			String changedFiles = gitDiff.getChangedFilesList(git, gitClone.getClonedPath());
 			
+			ArrayList<Alarm> alarmsInResult = new ArrayList<>();
+			alarmsInResult.addAll(reader.readResult(writer.getResult()));
+			//1. find there are intersections between chagnedFiles and PMD reports			
+			//1-1. find their directory and changed info
 			//diff: get code of files which were changed
 			try {
-				gitDiff.diffCommit(git, commits.get(i).getID());
+				changeInfo = gitDiff.diffCommit(git, commits.get(i).getID());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			//1-1-1. update line info in result
 			
+			//1-2. find intersections						
+						
+			//2-1. if in intersections, check pmd report after changed
 			//write a file which contains a comma delimited changed files list
 			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID());
 						
 			//apply pmd to changed files			
 			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i);
 			alarms = new ArrayList<Alarm>();
-			alarms.addAll(reader.readReportFile(pmd.getReportPath()));			
-						
-			//report comparison	with a result file{
-			//read result's alarm [E] [H]
-			ArrayList<Alarm> alarmsInResult = new ArrayList<>();
-			alarmsInResult.addAll(reader.readResult(writer.getResult()));
-			System.out.println("Old Alarm: ");
-			for(Alarm temp :  alarmsInResult) {
-				System.out.println(temp.getDir() + " " + temp.getLineNum());
-			}
-			//first, check directory			
-			alarmsInResult = comparator.compareDir(alarmsInResult, alarms);
+			alarms.addAll(reader.readReportFile(pmd.getReportPath()));
 			
+			//2-2. if pmd alarm is existing, newly generated
+			//2-2-1. compare alarms between resultAlarms and alarms
+			//2-2-2. add to result alarms
 			
-			//second, check added codes and calculate line num						
-			alarmsInResult = comparator.compareCode(alarmsInResult, alarms);				
-			if(isMoved) {
-				writer.appendResult();
-			}
+			//2-3 if alarm is disapeared, violation fixed
+			//2-3-1. compare alarms between resultAlarms and alarms
+			//2-3-2. add to fixed alarms
 			
-			//third, check line num}
-			alarmsInResult = comparator.compareLine(alarmsInResult, alarms);			
+			//3. if there are no intersections between chagned files and PMD reports, it is maintained.
+			//3-1. compare alarms between resultAlarms and alarms
+			//3-2. add to remain alarms									
 			
 			//write updated pmd report and its codes
-			writer.appendResult();					
+//			writer.appendResult();					
 		}								
 	}	
 }
