@@ -1,13 +1,29 @@
 package edu.handong.csee.isel.saresultminer.git;
 
-import edu.handong.csee.isel.saresultminer.pmd.Alarm;
-
 public class ChangeInfo {
-	Alarm resultAlarm;
-	Alarm currentAlarm;
+	String dir = "";
+	String start = "";
+	String end = "";
 	
-	public ChangeInfo(Alarm result, Alarm current) {
-		resultAlarm = result;
-		currentAlarm = current;
+	public ChangeInfo() {
+	
+	}
+	
+	public ChangeInfo(String dir, String start, String end) {
+		this.dir = dir;
+		this.start = start;
+		this.end = end;
+	}
+	
+	public String getDir() {
+		return dir;
+	}
+	
+	public String getStart() {
+		return start;
+	}
+	
+	public String getEnd() {
+		return end;
 	}
 }
