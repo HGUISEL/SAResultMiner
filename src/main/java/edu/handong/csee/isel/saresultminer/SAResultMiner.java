@@ -15,6 +15,7 @@ import edu.handong.csee.isel.saresultminer.pmd.Alarm;
 import edu.handong.csee.isel.saresultminer.pmd.PMD;
 import edu.handong.csee.isel.saresultminer.util.Comparator;
 import edu.handong.csee.isel.saresultminer.util.Reader;
+import edu.handong.csee.isel.saresultminer.util.ResultUpdater;
 import edu.handong.csee.isel.saresultminer.util.Writer;
 
 public class SAResultMiner {	
@@ -23,11 +24,12 @@ public class SAResultMiner {
 		Clone gitClone = new Clone();
 		Log gitLog = new Log();
 		Checkout gitCheckout = new Checkout();
-		Diff gitDiff = new Diff();
+		Diff gitDiff = new Diff();		
 		Git git;
 		String targetGitAddress = "";
 		ArrayList<Commit> commits = new ArrayList<>();
 		ArrayList<ChangeInfo> changeInfo = new ArrayList<>();
+		
 		
 		//pmd instance
 		//@param pmd command location
@@ -39,7 +41,7 @@ public class SAResultMiner {
 		Writer writer = new Writer();
 		Reader reader = new Reader();
 		Comparator comparator = new Comparator();
-
+		ResultUpdater resultUpdater = new ResultUpdater();
 		
 		//read input
 		targetGitAddress = reader.readInput(input);
@@ -83,37 +85,39 @@ public class SAResultMiner {
 		
 		//repeat until checking all commits
 		for(int i = 1; i <= 2; i ++) {
-			//checkout current +1
-			gitCheckout.checkoutToMaster(git);
-			gitCheckout.checkout(git, commits.get(i).getID(), i);
-			
-			//diff: get list of files which were changed
-			String changedFiles = gitDiff.getChangedFilesList(git, gitClone.getClonedPath());
-			
 			ArrayList<Alarm> alarmsInResult = new ArrayList<>();
 			alarmsInResult.addAll(reader.readResult(writer.getResult()));
+			
+			//checkout current +1
+			gitCheckout.checkoutToMaster(git);
+			gitCheckout.checkout(git, commits.get(i).getID(), i);			
+			
 			//1. find there are intersections between chagnedFiles and PMD reports			
 			//1-1. find their directory and changed info
 			//diff: get code of files which were changed
 			try {
-				changeInfo = gitDiff.diffCommit(git, commits.get(i).getID());
+				changeInfo = gitDiff.diffCommit(git, commits.get(i).getID(), gitClone.getProjectName());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//1-1-1. update line info in result
+			//1-2. update original result line num
+			alarmsInResult = resultUpdater.updateResultLineNum(alarmsInResult, changeInfo);
 			
-			//1-2. find intersections						
-						
+			//1-3. find intersections												
+			alarms = new ArrayList<Alarm>();
+			alarms.add(comparator.getIntersection());
+			
 			//2-1. if in intersections, check pmd report after changed
+			//diff: get list of files which were changed
+			String changedFiles = gitDiff.getChangedFilesList(git, gitClone.getClonedPath());			
 			//write a file which contains a comma delimited changed files list
-			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID());
+			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID(), i);
 						
 			//apply pmd to changed files			
-			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i);
-			alarms = new ArrayList<Alarm>();
-			alarms.addAll(reader.readReportFile(pmd.getReportPath()));
+			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i);						
 			
 			//2-2. if pmd alarm is existing, newly generated
+			comparator.compareReports(alarms, reader.readReportFile(pmd.getReportPath()));
 			//2-2-1. compare alarms between resultAlarms and alarms
 			//2-2-2. add to result alarms
 			
@@ -121,7 +125,7 @@ public class SAResultMiner {
 			//2-3-1. compare alarms between resultAlarms and alarms
 			//2-3-2. add to fixed alarms
 			
-			//3. if there are no intersections between chagned files and PMD reports, it is maintained.
+			//3. if there are no intersections between chagned files and PMD reports, it is maintained or newly generated.
 			//3-1. compare alarms between resultAlarms and alarms
 			//3-2. add to remain alarms									
 			

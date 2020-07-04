@@ -21,6 +21,8 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 public class Diff {
+	String changedFiles = "";
+	
 	public String getChangedFilesList(Git git, String clonedPath) {		
 		String changedFiles = "";
 		try {
@@ -47,7 +49,6 @@ public class Diff {
 			    	else
 			    		changedFiles += clonedPath + "/" + entry.getNewPath();
 			    }
-//			    System.out.println( changedPath );			    
 			}
 
 		} catch (RevisionSyntaxException e) {
@@ -64,7 +65,7 @@ public class Diff {
 		return changedFiles;
 	}
 	
-	public ArrayList<ChangeInfo> diffCommit(Git git, String commitID) throws IOException {	    
+	public ArrayList<ChangeInfo> diffCommit(Git git, String commitID, String projectName) throws IOException {	    
 		//Get the commit you are looking for.
 	    RevCommit newCommit;
 	    try (RevWalk walk = new RevWalk(git.getRepository())) {
@@ -75,27 +76,31 @@ public class Diff {
 	    String[] codeChangeSplitByNewLine = codeChange.split("\n");
 	    ArrayList<ChangeInfo> changeInfo = new ArrayList<>();
 	    int dirFlag = 0, lineFlag = 0;
-	    String start = "", end = "";
-	    String dir = "";
-    	ChangeInfo tempInfo = new ChangeInfo();
+	    String start = "", end = "", changeNum = "";
+	    String dir = "";    	
     	
 	    for(String change : codeChangeSplitByNewLine) {
 	    	if(change.startsWith("diff")) {
 	    		change = change.replaceAll("diff .+ b/","");	    	
 	    		if(!change.contains(".java")) continue;
-	    		dir = change;
+	    		dir = "./TargetProjects/" + projectName + change;
 	    		dirFlag = 1;
 	    	}
 	    	else if(change.contains("@@") && dirFlag == 1) {
 	    		change = change.replaceAll("@@", "");
 //	    		changeInfo.add(new ChangeInfo());
+	    		int oldLineNum = Integer.parseInt(change.split("\\+")[0].split(",")[1].replace(" ", "")); 	    		
 	    		change = change.split("\\+")[1];
+	    		
 	    		start = change.split(",")[0];
-	    		end = change.split(",")[1];
+	    		int newLineNum = Integer.parseInt(change.split(",")[1].replace(" ", ""));
+	    		int tempEnd = Integer.parseInt(start) + newLineNum - 1;
+	    		changeNum = "" + (newLineNum - oldLineNum);
+	    		end = "" + tempEnd;
 	    		lineFlag = 1;
 	    	}
 	    	if(dirFlag == 1 && lineFlag == 1) {
-	    		changeInfo.add(new ChangeInfo(dir, start, end));
+	    		changeInfo.add(new ChangeInfo(dir, start, end, changeNum));
 	    		start = ""; end = ""; dirFlag = 0; lineFlag = 0; dir = "";
 	    	}
 	    }
@@ -117,7 +122,6 @@ public class Diff {
 	    OutputStream outputStream = new ByteArrayOutputStream();
 	    try (DiffFormatter formatter = new DiffFormatter(outputStream)) {
 	        formatter.setRepository(git.getRepository());
-//	        formatter.setPathFilter(PathFilter.create(".java"));
 	        formatter.format(oldTreeIterator, newTreeIterator);	        
 	    }
 	    String diff = outputStream.toString();

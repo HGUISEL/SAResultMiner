@@ -9,11 +9,11 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 
 public class Clone {
-	
+	String projectName = "";
 	String clonedPath = "";
 	
-	public Git clone(String gitAddress) {		
-		String projectName = getProjectName(gitAddress);
+	public Git clone(String gitAddress) {
+		getProjectName(gitAddress);
 		Git git = null;
 		
 		File newDir = new File("./TargetProjects");
@@ -47,16 +47,18 @@ public class Clone {
 		return git;
 	}
 	
-	String getProjectName(String gitAddress) {
+	private void getProjectName(String gitAddress) {
 		String[] addressSplit = gitAddress.split("/");
 		String gitName = addressSplit[addressSplit.length-1];
-		String projectName = gitName.split("\\.")[0];
-		
-		return projectName;
+		projectName = gitName.split("\\.")[0];				
 	}
 	
 	public String getClonedPath() {
 		return clonedPath;
+	}
+	
+	public String getProjectName() {
+		return projectName;
 	}
 	
 }

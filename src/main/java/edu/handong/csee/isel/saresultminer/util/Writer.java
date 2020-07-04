@@ -17,8 +17,9 @@ public class Writer {
 	String changedFilesPath = "";
 	int detectionIdx = 0;
 	String resultPath = "./Result.csv";
+	int cnt;
 	
-	public String writeChangedFiles(String changedFiles, String commitID) {
+	public String writeChangedFiles(String changedFiles, String commitID, int cnt) {
 		File newDir = new File("./ChangedFilesList");
 		if(!newDir.exists()) {
 			newDir.mkdir();
@@ -28,7 +29,7 @@ public class Writer {
 		System.out.println("INFO: Start to Write Changed Files List");
 		long start = System.currentTimeMillis();
 		try {			    
-			File file = new File("./ChangedFilesList/" + commitID + ".txt" );
+			File file = new File("./ChangedFilesList/" + cnt +"_" +commitID + ".txt" );
 			changedFilesPath = file.toString();
 			if (!file.exists()) {
 				file.createNewFile();
