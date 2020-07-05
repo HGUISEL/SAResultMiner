@@ -115,7 +115,7 @@ public class SAResultMiner {
 						
 			//apply pmd to changed files			
 			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i);						
-			
+
 			//2-2. if pmd alarm is existing, newly generated
 //			comparator.compareReports(alarms, reader.readReportFile(pmd.getReportPath()));
 			//2-2-1. compare alarms between resultAlarms and alarms

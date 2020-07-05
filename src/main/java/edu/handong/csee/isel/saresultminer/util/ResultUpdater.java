@@ -24,13 +24,14 @@ public class ResultUpdater {
 		return updatedResult;
 	}
 	
-	private void updateChangedLine(Alarm alarm, ChangeInfo change) {
+	private Alarm updateChangedLine(Alarm alarm, ChangeInfo change) {		
 		int alarmLine = Integer.parseInt(alarm.getLineNum().trim());
 		if(alarmLine <= change.getOldStart()) {
-			return;
+			return alarm;
 		} else if(alarmLine >= change.getOldEnd()) {
 			int changedLine = alarmLine + change.getNewRange() - change.getOldRange();
 			alarm.setLineNum("" + changedLine);
+			return alarm;
 		} else if(change.getOldStart() <= alarmLine && alarmLine <= change.getOldEnd()) {
 			
 		}

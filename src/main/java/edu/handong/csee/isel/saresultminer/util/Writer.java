@@ -66,7 +66,7 @@ public class Writer {
 									
 			for(Alarm alarm : alarms) {
 				detectionIdx++;						
-				csvPrinter.printRecord(""+detectionIdx, latestCommitID, pmdVersion, rule, alarm.getDir(), commitID, commitTime, alarm.getLineNum(), "","","","","", "", "", alarm.getViolatingCode(), "", "" );				
+				csvPrinter.printRecord(""+detectionIdx, latestCommitID, pmdVersion, rule, alarm.getDir(), commitID, commitTime, alarm.getLineNum(), "","","","","", "", "", alarm.getCode(), "", "" );				
 			}
 			writer.flush();
 			writer.close();
