@@ -30,4 +30,7 @@ public class Alarm {
 		return violatingCode;
 	}
 	
+	public void setLineNum(String num) {
+		this.lineNum = num;
+	}
 }

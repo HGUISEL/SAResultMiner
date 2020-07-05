@@ -1,6 +1,7 @@
 package edu.handong.csee.isel.saresultminer.git;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -21,6 +22,10 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 public class Diff {
+	enum Status{
+		idle, diff, lineNum, codes
+	}
+	
 	String changedFiles = "";
 	
 	public String getChangedFilesList(Git git, String clonedPath) {		
@@ -75,38 +80,70 @@ public class Diff {
 	    String codeChange = getDiffOfCommit(newCommit, git);	    
 	    String[] codeChangeSplitByNewLine = codeChange.split("\n");
 	    ArrayList<ChangeInfo> changeInfo = new ArrayList<>();
-	    int dirFlag = 0, lineFlag = 0;
-	    String start = "", end = "", changeNum = "";
+	    Status status = Status.idle;
+	    int oldRange = 0, oldStart = 0, oldEnd=0, newStart=0, newRange=0, newEnd=0;
+	    String code = "";
 	    String dir = "";    	
     	
 	    for(String change : codeChangeSplitByNewLine) {
-	    	if(change.startsWith("diff")) {
+	    	if(status == Status.idle && change.startsWith("diff")) {	    			    		
 	    		change = change.replaceAll("diff .+ b/","");	    	
 	    		if(!change.contains(".java")) continue;
 	    		dir = "./TargetProjects/" + projectName + change;
-	    		dirFlag = 1;
+	    		status = Status.diff;
 	    	}
-	    	else if(change.contains("@@") && dirFlag == 1) {
+	    	else if(status == Status.diff && change.contains("@@")) {
+
 	    		change = change.replaceAll("@@", "");
-//	    		changeInfo.add(new ChangeInfo());
-	    		int oldLineNum = Integer.parseInt(change.split("\\+")[0].split(",")[1].replace(" ", "")); 	    		
-	    		change = change.split("\\+")[1];
+
+	    		String oldPart = change.split("\\+")[0];
+	    		oldRange = Integer.parseInt(oldPart.split(",")[1].trim());
+	    		oldStart = Integer.parseInt(oldPart.split(",")[0].replace("-", "").trim());
+	    		if(oldStart == 0 && oldRange == 0) oldEnd = 0;
+	    		else oldEnd = oldStart + oldRange - 1;
 	    		
-	    		start = change.split(",")[0];
-	    		int newLineNum = Integer.parseInt(change.split(",")[1].replace(" ", ""));
-	    		int tempEnd = Integer.parseInt(start) + newLineNum - 1;
-	    		changeNum = "" + (newLineNum - oldLineNum);
-	    		end = "" + tempEnd;
-	    		lineFlag = 1;
+	    		String newPart = change.split("\\+")[1];	    		
+	    		newStart = Integer.parseInt(newPart.split(",")[0]);
+	    		newRange = Integer.parseInt(newPart.split(",")[1].trim());
+	    		newEnd = newStart + newRange - 1;	    		
+	    		
+	    		status = Status.lineNum;
+	    	}	    	
+	    	else if((status == Status.lineNum || status == Status.codes) && (change.startsWith(" ") || change.startsWith("+") || change.startsWith("-"))) {
+	    		code += change + "\n";
+	    		status = Status.codes;
 	    	}
-	    	if(dirFlag == 1 && lineFlag == 1) {
-	    		changeInfo.add(new ChangeInfo(dir, start, end, changeNum));
-	    		start = ""; end = ""; dirFlag = 0; lineFlag = 0; dir = "";
+	    	else if(status == Status.codes && change.startsWith("diff")) {
+	    		changeInfo.add(new ChangeInfo(dir, oldStart, oldRange, oldEnd, newStart, newRange, newEnd, code));
+	    		oldRange = 0; oldStart = 0; oldEnd=0; newStart=0; newRange=0; newEnd=0; dir = ""; code = "";
+	    		
+	    		change = change.replaceAll("diff .+ b/","");	    	
+	    		if(!change.contains(".java")) continue;
+	    		dir = "./TargetProjects/" + projectName + File.separator + change;
+	    		status = Status.diff;
+	    	} 
+	    	else if(status == Status.codes && change.contains("@@")) {
+	    		changeInfo.add(new ChangeInfo(dir, oldStart, oldRange, oldEnd, newStart, newRange, newEnd, code));
+	    		oldRange = 0; oldStart = 0; oldEnd=0; newStart=0; newRange=0; newEnd=0; code = "";
+	    		change = change.replaceAll("@@", "");
+
+	    		String oldPart = change.split("\\+")[0];
+	    		oldRange = Integer.parseInt(oldPart.split(",")[1].trim());
+	    		oldStart = Integer.parseInt(oldPart.split(",")[0].replace("-", "").trim());
+	    		if(oldStart == 0 && oldRange == 0) oldEnd = 0;
+	    		else oldEnd = oldStart + oldRange - 1;
+	    		
+	    		String newPart = change.split("\\+")[1];	    		
+	    		newStart = Integer.parseInt(newPart.split(",")[0]);
+	    		newRange = Integer.parseInt(newPart.split(",")[1].trim());
+	    		newEnd = newStart + newRange - 1;	    		
+	    		status = Status.lineNum;
 	    	}
+
 	    }
-	    for(ChangeInfo temp : changeInfo) {
-		    System.out.println(temp.getDir()+ "Start: " + temp.getStart() + " End: " + temp.getEnd() );	    	
-	    }
+//	    for(ChangeInfo temp : changeInfo) {
+//		    System.out.println(temp.getDir()+ " Old (Start: " + temp.getOldStart() + " End: " + temp.getOldEnd() + ")  New ( Start: " + temp.getNewStart() + " End: " + temp.getNewEnd() + "\n" + temp.getChangedCode());	    	
+//	    }
 
 	    return changeInfo;
 	}
