@@ -99,6 +99,7 @@ public class SAResultMiner {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			//***** not have been tested 1-2. *****
 			//1-2. update original result line num and get changed alarms and unchanged alarms		
 			resultUpdater.updateResultLineNum(alarmsInResult, changeInfo);
 			alarmsInResult.clear();

@@ -22,9 +22,10 @@ public class Alarm {
 		}
 	}
 	
-	public Alarm(String path, String lineNum) {
+	public Alarm(String path, String lineNum, String code) {
 		dir = path;
 		this.lineNum = lineNum;
+		this.code = code;
 	}
 	
 	public String getDir() {

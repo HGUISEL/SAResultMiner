@@ -69,7 +69,8 @@ public class Reader {
 				if(cnt == 0) { cnt++; continue; }
 			    String id = record.get(Headers.VICID);
 			    String lineNum = record.get(Headers.VICLine);
-			    temp.add(new Alarm(id, lineNum));
+			    String code = record.get(Headers.OriginalCode);
+			    temp.add(new Alarm(id, lineNum, code));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
