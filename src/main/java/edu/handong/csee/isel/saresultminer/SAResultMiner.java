@@ -29,7 +29,7 @@ public class SAResultMiner {
 		String targetGitAddress = "";
 		ArrayList<Commit> commits = new ArrayList<>();
 		ArrayList<ChangeInfo> changeInfo = new ArrayList<>();
-		
+		ArrayList<Alarm> alarmsInResult = new ArrayList<>();
 		
 		//pmd instance
 		//@param pmd command location
@@ -84,8 +84,7 @@ public class SAResultMiner {
 		int logSize = commits.size();
 		
 		//repeat until checking all commits
-		for(int i = 1; i <= 2; i ++) {
-			ArrayList<Alarm> alarmsInResult = new ArrayList<>();
+		for(int i = 1; i < logSize; i ++) {			
 			alarmsInResult.addAll(reader.readResult(writer.getResult()));
 			
 			//checkout current +1
@@ -100,12 +99,23 @@ public class SAResultMiner {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//1-2. update original result line num
-			alarmsInResult = resultUpdater.updateResultLineNum(alarmsInResult, changeInfo);
+			//1-2. update original result line num and get changed alarms and unchanged alarms		
+			resultUpdater.updateResultLineNum(alarmsInResult, changeInfo);
+			alarmsInResult.clear();
+			ArrayList<Alarm> changedAlarms = resultUpdater.getChangedAlarms();
+			ArrayList<Alarm> unchangedAlarms = resultUpdater.getUnchangedAlarms();
 			
-			//1-3. find intersections												
-			alarms = new ArrayList<Alarm>();
-//			alarms.add(comparator.getIntersection());
+			for(Alarm alarm : changedAlarms) {				
+				System.out.println("********** Changed ************");
+				System.out.println(alarm.getCode());
+				System.out.println(alarm.getLineNum());				
+			}
+			
+			for(Alarm alarm : unchangedAlarms) {				
+				System.out.println("********** unchanged ************");				
+				System.out.println(alarm.getCode());
+				System.out.println(alarm.getLineNum());				
+			}
 			
 			//2-1. if in intersections, check pmd report after changed
 			//diff: get list of files which were changed
@@ -113,9 +123,11 @@ public class SAResultMiner {
 			//write a file which contains a comma delimited changed files list
 			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID(), i);
 						
-			//apply pmd to changed files			
+			//apply pmd to changed files						
 			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i);						
-
+			alarms = new ArrayList<Alarm>();
+			alarms.addAll(reader.readReportFile(pmd.getReportPath()));
+			//compare alarms and alarmsInResult which contains updated line Num
 			//2-2. if pmd alarm is existing, newly generated
 //			comparator.compareReports(alarms, reader.readReportFile(pmd.getReportPath()));
 			//2-2-1. compare alarms between resultAlarms and alarms

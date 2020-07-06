@@ -63,7 +63,7 @@ public class PMD {
 		cmdLine.addArgument("-R");
 		cmdLine.addArgument("category/java/errorprone.xml/NullAssignment");
 		cmdLine.addArgument("-reportfile");
-		cmdLine.addArgument("./PMDReports/"+ cnt + "_Changed_" + commitID+".csv");
+		cmdLine.addArgument("./PMDReports/"+ cnt + "_" + commitID+".csv");
 		DefaultExecutor executor = new DefaultExecutor();
 		int[] exitValues = {0, 1, 4};
 		executor.setExitValues(exitValues);

@@ -13,7 +13,7 @@ build
 gradlew
 gradlew.bat
 settings.gradle
-
+*.txt
 .settings
 bin
 gradle/wrapper

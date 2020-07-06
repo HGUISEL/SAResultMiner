@@ -84,8 +84,8 @@ public class Diff {
 	    int oldRange = 0, oldStart = 0, oldEnd=0, newStart=0, newRange=0, newEnd=0;
 	    String code = "";
 	    String dir = "";    	
-    	
-	    for(String change : codeChangeSplitByNewLine) {
+    	int cnt = 0;
+	    for(String change : codeChangeSplitByNewLine) {	    	
 	    	if(status == Status.idle && change.startsWith("diff")) {	    			    		
 	    		change = change.replaceAll("diff .+ b/","");	    	
 	    		if(!change.contains(".java")) continue;
@@ -139,7 +139,11 @@ public class Diff {
 	    		newEnd = newStart + newRange - 1;	    		
 	    		status = Status.lineNum;
 	    	}
-
+	    	else if(status == Status.codes && codeChangeSplitByNewLine.length -1 == cnt) {
+	    		changeInfo.add(new ChangeInfo(dir, oldStart, oldRange, oldEnd, newStart, newRange, newEnd, code));
+	    		oldRange = 0; oldStart = 0; oldEnd=0; newStart=0; newRange=0; newEnd=0; code = "";	    		
+	    	}
+	    	cnt ++;
 	    }
 //	    for(ChangeInfo temp : changeInfo) {
 //		    System.out.println(temp.getDir()+ " Old (Start: " + temp.getOldStart() + " End: " + temp.getOldEnd() + ")  New ( Start: " + temp.getNewStart() + " End: " + temp.getNewEnd() + "\n" + temp.getChangedCode());	    	

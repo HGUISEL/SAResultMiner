@@ -8,7 +8,11 @@ import java.io.IOException;
 public class Alarm {
 	String dir = "";
 	String lineNum = "";
-	String code = "";
+	String code = "";		
+	
+	public Alarm() {
+		
+	}
 	
 	public Alarm(String alarm) {
 		if(alarm.split(":").length > 2) {
