@@ -11,11 +11,8 @@ import java.util.ArrayList;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import edu.handong.csee.isel.saresultminer.pmd.Alarm;
-
 public class Writer {
 	String changedFilesPath = "";
-	int detectionIdx = 0;
 	String resultPath = "./Result.csv";
 	int cnt;
 	
@@ -54,7 +51,7 @@ public class Writer {
 		return changedFilesPath;
 	}
 	
-	public void initResult(ArrayList<Alarm> alarms, String latestCommitID, String pmdVersion, String rule, String commitID, String commitTime) {
+	public void initResult(ArrayList<Result> results) {
 		String fileName = "./Result.csv";
 		System.out.println("INFO: Start to Initialize Result File");
 		long start = System.currentTimeMillis();
@@ -64,9 +61,31 @@ public class Writer {
 									.withHeader("Detection ID", "Latest Commit ID", "PMD Version", "Rule Name", "File Path", "Violation Introducing Commit ID", "VIC Date", "VIC Line Num.", "Latest Detection Commit ID", "LDC ID Date", "LDC Line Num.","Violation Fixed Commit ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", "Original Code", "Fixed Code", "Really Fixed?"));
 			) {		
 									
-			for(Alarm alarm : alarms) {
-				detectionIdx++;						
-				csvPrinter.printRecord(""+detectionIdx, latestCommitID, pmdVersion, rule, alarm.getDir(), commitID, commitTime, alarm.getLineNum(), "","","","","", "", "", alarm.getCode(), "", "" );				
+			for(Result result : results) {				
+				csvPrinter.printRecord(result.getDetectionID(), result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), "", "", "", "", "", "", "", result.getOriginCode(), "", "");				
+			}
+			writer.flush();
+			writer.close();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		long end = System.currentTimeMillis();
+		
+		System.out.println("INFO: Finish to Initialize Result File (" + (end - start)/1000 + " sec.)");
+	}
+	
+	public void writeResult(ArrayList<Result> results) {
+		String fileName = "./Result.csv";
+		System.out.println("INFO: Start to Initialize Result File");
+		long start = System.currentTimeMillis();
+		try(
+			BufferedWriter writer = Files.newBufferedWriter(Paths.get(fileName));
+			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
+									.withHeader("Detection ID", "Latest Commit ID", "PMD Version", "Rule Name", "File Path", "Violation Introducing Commit ID", "VIC Date", "VIC Line Num.", "Latest Detection Commit ID", "LDC ID Date", "LDC Line Num.","Violation Fixed Commit ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", "Original Code", "Fixed Code", "Really Fixed?"));
+			) {		
+									
+			for(Result result : results) {										
+				csvPrinter.printRecord(result.getDetectionID(), result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), result.getLDCID(), result.getLDCDate(), result.getLDCLineNum(), result.getVFCID(), result.getVFCDate(), result.getVFCLineNum(), result.getFixedPeriod(), result.getOriginCode(), result.getFixedCode(), "");				
 			}
 			writer.flush();
 			writer.close();

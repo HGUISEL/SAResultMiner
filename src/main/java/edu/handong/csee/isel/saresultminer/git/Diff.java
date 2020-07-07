@@ -89,7 +89,7 @@ public class Diff {
 	    	if(status == Status.idle && change.startsWith("diff")) {	    			    		
 	    		change = change.replaceAll("diff .+ b/","");	    	
 	    		if(!change.contains(".java")) continue;
-	    		dir = "./TargetProjects/" + projectName + change;
+	    		dir = "./TargetProjects/" + projectName +"/"+ change;
 	    		status = Status.diff;
 	    	}
 	    	else if(status == Status.diff && change.contains("@@")) {
@@ -111,6 +111,10 @@ public class Diff {
 	    	}	    	
 	    	else if((status == Status.lineNum || status == Status.codes) && (change.startsWith(" ") || change.startsWith("+") || change.startsWith("-"))) {
 	    		code += change + "\n";
+	    		if(codeChangeSplitByNewLine.length -1 == cnt) {
+	    			changeInfo.add(new ChangeInfo(dir, oldStart, oldRange, oldEnd, newStart, newRange, newEnd, code));
+		    		oldRange = 0; oldStart = 0; oldEnd=0; newStart=0; newRange=0; newEnd=0; code = "";
+	    		}
 	    		status = Status.codes;
 	    	}
 	    	else if(status == Status.codes && change.startsWith("diff")) {

@@ -1,1 +1,20 @@
 Detection ID,Latest Commit ID,PMD Version,Rule Name,File Path,Violation Introducing Commit ID,VIC Date,VIC Line Num.,Latest Detection Commit ID,LDC ID Date,LDC Line Num.,Violation Fixed Commit ID,VFC Date,VFC Line Num.,Fixed Period(day),Original Code,Fixed Code,Really Fixed?
+1,ae239d9c8b897fbc9ecd7b673aa3f78b70eab4bc,6.25,category/java/errorprone.xml/NullAssignment,./TargetProjects/testNA/test.java,0dd124b8d64ea3fbf49113467b9d5fa3cd279be7,1594040746,11,1e8f8188bae744891516145a9388f6f661c98e30,1594040995,13,ae239d9c8b897fbc9ecd7b673aa3f78b70eab4bc,1594041033,-1,1594041033/1594040746,"        foo = null;"," 
+         foo = new Object();
+ 
+-        foo = null;
++        foo = new Object();
+ 
+         num3 = 3;
+         num5 = 5;
+",
+2,ae239d9c8b897fbc9ecd7b673aa3f78b70eab4bc,6.25,category/java/errorprone.xml/NullAssignment,./TargetProjects/testNA/test.java,e93e01216c0bf2ca69a58b296edebdcd51e4a3a7,1594040913,19,e4a0b6846642a59635617a796405524db7cd04f2,1594040962,21,1e8f8188bae744891516145a9388f6f661c98e30,1594040995,-1,1594040995/1594040913,"        foo = null;","         num5 = 5;
+         num2 = 3;
+         num1 = 2;
+-        foo = new Object();
+-
+-        foo = null;
++        foo = new Object();        
+     }
+ }
+",

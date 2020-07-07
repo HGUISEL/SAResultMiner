@@ -15,10 +15,11 @@ import edu.handong.csee.isel.saresultminer.pmd.Alarm;
 import edu.handong.csee.isel.saresultminer.pmd.PMD;
 import edu.handong.csee.isel.saresultminer.util.Comparator;
 import edu.handong.csee.isel.saresultminer.util.Reader;
+import edu.handong.csee.isel.saresultminer.util.Result;
 import edu.handong.csee.isel.saresultminer.util.ResultUpdater;
 import edu.handong.csee.isel.saresultminer.util.Writer;
 
-public class SAResultMiner {	
+public class SAResultMiner {			
 	public void run(String input) {	
 		//instances related with git 
 		Clone gitClone = new Clone();
@@ -37,11 +38,14 @@ public class SAResultMiner {
 		String pmdVersion = "6.25";
 		String rule = "category/java/errorprone.xml/NullAssignment";
 		ArrayList<Alarm> alarms = new ArrayList<>();
+		
 		//utils instances
 		Writer writer = new Writer();
 		Reader reader = new Reader();
 		Comparator comparator = new Comparator();
 		ResultUpdater resultUpdater = new ResultUpdater();
+		ArrayList<Result> results = new ArrayList<>();
+		int detectionID = 0;
 		
 		//read input
 		targetGitAddress = reader.readInput(input);
@@ -75,17 +79,22 @@ public class SAResultMiner {
 		
 		//read first pmd report
 		alarms.addAll(reader.readReportFile(pmd.getReportPath()));
+		for(Alarm alarm : alarms) {
+			detectionID++;
+			results.add(new Result(detectionID, latestCommitID, pmdVersion, rule, alarm.getDir(), commits.get(0).getID(), commits.get(0).getTime(), alarm.getLineNum(), alarm.getCode()));
+		}
 		
-		//write result form and first detection
-		//-Detection ID +Latest Commit ID +PMD Version +Rule Name +File Path +VIC ID +VIC Date +VIC Line Num. -Latest Detection Commit ID -LDC LineNum -LDC Date -VFC ID -VFC Date -VFC Line Num. -Fixed Period(day) +Original Code -Fix Code -Really Fixed?
-		writer.initResult(alarms, latestCommitID, pmdVersion, rule, commits.get(0).getID(), commits.get(0).getTime());
+		//write result form and first detection		
+		writer.initResult(results);
 		
 		//get all commit size for repeating
 		int logSize = commits.size();
 		
 		//repeat until checking all commits
 		for(int i = 1; i < logSize; i ++) {			
-			alarmsInResult.addAll(reader.readResult(writer.getResult()));
+			for(Result result: results) {
+				alarmsInResult.add(new Alarm(result));
+			}			
 			
 			//checkout current +1
 			gitCheckout.checkoutToMaster(git);
@@ -104,16 +113,16 @@ public class SAResultMiner {
 			resultUpdater.updateResultLineNum(alarmsInResult, changeInfo);
 			alarmsInResult.clear();
 			ArrayList<Alarm> changedAlarms = resultUpdater.getChangedAlarms();
-			ArrayList<Alarm> unchangedAlarms = resultUpdater.getUnchangedAlarms();
+			ArrayList<Alarm> unchangedAlarms = resultUpdater.getUnchangedAlarms();			
 			
+			System.out.println("********** Changed ************");
 			for(Alarm alarm : changedAlarms) {				
-				System.out.println("********** Changed ************");
 				System.out.println(alarm.getCode());
 				System.out.println(alarm.getLineNum());				
 			}
 			
-			for(Alarm alarm : unchangedAlarms) {				
-				System.out.println("********** unchanged ************");				
+			System.out.println("********** Unchanged ************");
+			for(Alarm alarm : unchangedAlarms) {												
 				System.out.println(alarm.getCode());
 				System.out.println(alarm.getLineNum());				
 			}
@@ -125,25 +134,61 @@ public class SAResultMiner {
 			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID(), i);
 						
 			//apply pmd to changed files						
-			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i);						
+			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i);
 			alarms = new ArrayList<Alarm>();
 			alarms.addAll(reader.readReportFile(pmd.getReportPath()));
+			
 			//compare alarms and alarmsInResult which contains updated line Num
 			//2-2. if pmd alarm is existing, newly generated
-//			comparator.compareReports(alarms, reader.readReportFile(pmd.getReportPath()));
-			//2-2-1. compare alarms between resultAlarms and alarms
-			//2-2-2. add to result alarms
+			comparator.compareAlarms(alarms, changedAlarms, unchangedAlarms);			
 			
-			//2-3 if alarm is disapeared, violation fixed
-			//2-3-1. compare alarms between resultAlarms and alarms
-			//2-3-2. add to fixed alarms
+			//fixed  
+			//"Violation Fixed Commit ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", 
+			//"Fixed Code"	
+			for(Alarm fixedAlarm : comparator.getFixedAlarms()) {
+				for(int j = 0 ; j < results.size(); j ++ ) {
+					Result tempResult = results.get(j);
+					if(tempResult.getDetectionID() == fixedAlarm.getDetectionIDInResult()) {
+						tempResult.setVFCID(commits.get(i).getID());
+						tempResult.setVFCLineNum(fixedAlarm.getLineNum());
+						tempResult.setVFCDate(commits.get(i).getTime());
+						tempResult.setFixedPeriod(tempResult.getVFCDate()+"/"+tempResult.getVICDate());
+						tempResult.setFixedCode(fixedAlarm.getCode());	
+						results.set(j, tempResult);
+						break;
+					}
+				}
+			}			
 			
-			//3. if there are no intersections between chagned files and PMD reports, it is maintained or newly generated.
-			//3-1. compare alarms between resultAlarms and alarms
-			//3-2. add to remain alarms									
+			//maintained  
+			//"Latest Detection Commit ID", "LDC ID Date", "LDC Line Num.", 
+			for(Alarm maintainedAlarm : comparator.getMaintainedAlarms()) {
+				for(int j = 0 ; j < results.size(); j ++ ) {
+					Result tempResult = results.get(j);
+					if(tempResult.getDetectionID() == maintainedAlarm.getDetectionIDInResult()) {
+						tempResult.setLDCID(commits.get(i).getID());
+						tempResult.setLDCLineNum(maintainedAlarm.getLineNum());
+						tempResult.setLDCDate(commits.get(i).getTime());	
+						results.set(j, tempResult);
+						break;
+					}
+				}
+			}	
+			
+			//newly generated
+			//"Detection ID", "Latest Commit ID", "PMD Version", "Rule Name", "File Path", 
+			//"Violation Introducing Commit ID", "VIC Date", "VIC Line Num.",  
+			//"Original Code"
+			for(Alarm newAlarm : comparator.getNewGeneratedAlarms()) {	
+				detectionID++;				
+				results.add(new Result(detectionID, latestCommitID, pmdVersion, rule, newAlarm.getDir(), commits.get(i).getID(), commits.get(i).getTime(), newAlarm.getLineNum(), newAlarm.getCode()));	
+			}
+			
+			comparator.init();
+			resultUpdater.init();
 			
 			//write updated pmd report and its codes
-//			writer.appendResult();					
+			writer.writeResult(results);
 		}								
 	}	
 }

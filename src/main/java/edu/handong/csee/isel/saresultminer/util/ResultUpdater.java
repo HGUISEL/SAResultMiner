@@ -9,8 +9,13 @@ public class ResultUpdater {
 	ArrayList<Alarm> changedAlarms = new ArrayList<>();
 	ArrayList<Alarm> unchangedAlarms = new ArrayList<>();
 	
+	public void init() {
+		changedAlarms.clear();
+		unchangedAlarms.clear();
+	}
+	
 	public void updateResultLineNum(ArrayList<Alarm> alarms, ArrayList<ChangeInfo> changes) {
-
+		
 		if(alarms.size() == 0 || changes.size() == 0) {
 			return;
 		} else {
@@ -23,9 +28,12 @@ public class ResultUpdater {
 						if(classifiedAlarm == null) {
 							//line or file is deleted
 							alarm.setLineNum("-1");
+							alarm.setCode(change.getChangedCode());
 							changedAlarms.add(alarm);
+							break;
 						}
-						if(!alarm.getLineNum().equals(classifiedAlarm.getLineNum())) {
+						else if(!alarm.getLineNum().equals(classifiedAlarm.getLineNum())) {
+							classifiedAlarm.setDetectionIDInResult(alarm.getDetectionIDInResult());
 							changedAlarms.add(classifiedAlarm);
 							break;
 						}
@@ -59,7 +67,7 @@ public class ResultUpdater {
 			if(change.getChangedCode().contains(alarm.getCode())) {
 				changedLineNum = change.getNewStart();
 				for(String codeLine : change.getChangedCode().split("\n")) {
-					if(codeLine.split(" ", 2)[1].trim().equals(alarm.getCode().trim())) {						
+					if(codeLine.split(" ").length > 1 &&codeLine.split(" ", 2)[1].trim().equals(alarm.getCode().trim())) {						
 						if(codeLine.startsWith("-")) {
 							//violating code line is deleted
 							return null;
@@ -67,8 +75,10 @@ public class ResultUpdater {
 							alarm.setLineNum("" + changedLineNum);
 							return alarm;
 						}						
+					} else if(codeLine.startsWith(" ") || codeLine.startsWith("+")) {
+						changedLineNum++;
 					}
-					changedLineNum++;
+					
 				}
 			}			
 		}
