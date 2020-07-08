@@ -1,0 +1,3 @@
+/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/test/java/com/google/cloud/dataflow/sdk/util/MergingActiveWindowSetTest.java:59:	Assigning an Object to null is a code smell.  Consider refactoring.
+/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/test/java/com/google/cloud/dataflow/sdk/util/MergingActiveWindowSetTest.java:60:	Assigning an Object to null is a code smell.  Consider refactoring.
+/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/test/java/com/google/cloud/dataflow/sdk/util/MergingActiveWindowSetTest.java:61:	Assigning an Object to null is a code smell.  Consider refactoring.

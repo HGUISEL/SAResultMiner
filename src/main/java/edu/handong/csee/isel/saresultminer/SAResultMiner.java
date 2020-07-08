@@ -47,6 +47,8 @@ public class SAResultMiner {
 		ArrayList<Result> results = new ArrayList<>();
 		int detectionID = 0;
 		
+		long start = System.currentTimeMillis();
+		
 		//read input
 		targetGitAddress = reader.readInput(input);
 		//readInput test
@@ -56,10 +58,10 @@ public class SAResultMiner {
 		git = gitClone.clone(targetGitAddress);
 		
 		//get all commit id and latest commit id
-		gitCheckout.checkoutToMaster(git);
+//		gitCheckout.checkoutToMaster(git);
 		commits.addAll(gitLog.getAllCommitID(git));
 		String latestCommitID = gitLog.getLatestCommitId();
-		
+//		gitCheckout.checkoutToMaster(git);
 		/*
 		 * checkout to first version
 		 * @param git: a cloned git repository 		 
@@ -75,7 +77,7 @@ public class SAResultMiner {
 		 * @param clonedPath: pmd's target direcotry
 		 * @param cnt: setting first, second, third... commit
 		 */
-		pmd.execute(rule, commits.get(0).getID(), gitClone.getClonedPath(), 0);
+		pmd.execute(rule, commits.get(0).getID(), gitClone.getClonedPath(), 0, gitClone.getProjectName());
 		
 		//read first pmd report
 		alarms.addAll(reader.readReportFile(pmd.getReportPath()));
@@ -85,24 +87,28 @@ public class SAResultMiner {
 		}
 		
 		//write result form and first detection		
-		writer.initResult(results);
+		writer.initResult(results, gitClone.getProjectName());
 		
 		//get all commit size for repeating
 		int logSize = commits.size();
 		
 		//repeat until checking all commits
-		for(int i = 1; i < logSize; i ++) {			
+		for(int i = 1; i < logSize; i ++) {
+			if(commits.get(i).getID().equals("11e842717f70298a4ea8436363b3101117685f60")) continue;
 			for(Result result: results) {
 				alarmsInResult.add(new Alarm(result));
 			}			
 			
-			//checkout current +1
-			gitCheckout.checkoutToMaster(git);
+			//checkout current +1			
 			gitCheckout.checkout(git, commits.get(i).getID(), i);			
 			
 			//1. find there are intersections between chagnedFiles and PMD reports			
 			//1-1. find their directory and changed info
 			//diff: get code of files which were changed
+//			if(!commits.get(i).getID().equals("d9f63feb2700131c6757c969de57b20c0a1327a1")) {
+//				continue;
+//			}
+//			System.out.println("break point");
 			try {
 				changeInfo = gitDiff.diffCommit(git, commits.get(i).getID(), gitClone.getProjectName());
 			} catch (IOException e) {
@@ -131,15 +137,15 @@ public class SAResultMiner {
 			//diff: get list of files which were changed
 			String changedFiles = gitDiff.getChangedFilesList(git, gitClone.getClonedPath());			
 			//write a file which contains a comma delimited changed files list
-			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID(), i);
+			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID(), i, gitClone.getProjectName());
 						
 			//apply pmd to changed files						
-			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i);
+			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i, gitClone.getProjectName());
 			alarms = new ArrayList<Alarm>();
 			alarms.addAll(reader.readReportFile(pmd.getReportPath()));
 			
 			//compare alarms and alarmsInResult which contains updated line Num
-			//2-2. if pmd alarm is existing, newly generated
+			//2-2. if pmd alarm is existing, newly generated			
 			comparator.compareAlarms(alarms, changedAlarms, unchangedAlarms);			
 			
 			//fixed  
@@ -188,7 +194,9 @@ public class SAResultMiner {
 			resultUpdater.init();
 			
 			//write updated pmd report and its codes
-			writer.writeResult(results);
-		}								
-	}	
+			writer.writeResult(results, gitClone.getProjectName());
+		}					
+		long end = System.currentTimeMillis();
+		System.out.println("FINAL RESULT IS GENERATED!! (TOTAL: " + (end-start)/1000 + " sec.)" );
+	}			
 }

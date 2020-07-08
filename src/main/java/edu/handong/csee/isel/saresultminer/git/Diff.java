@@ -137,9 +137,14 @@ public class Diff {
 	    		if(oldStart == 0 && oldRange == 0) oldEnd = 0;
 	    		else oldEnd = oldStart + oldRange - 1;
 	    		
-	    		String newPart = change.split("\\+")[1];	    		
-	    		newStart = Integer.parseInt(newPart.split(",")[0]);
-	    		newRange = Integer.parseInt(newPart.split(",")[1].trim());
+	    		String newPart = change.split("\\+")[1];
+	    		if(!newPart.contains(",")) {
+	    			newStart = Integer.parseInt(newPart.split(",")[0].trim());
+		    		newRange = 0;
+	    		}else {
+	    			newStart = Integer.parseInt(newPart.split(",")[0]);
+	    			newRange = Integer.parseInt(newPart.split(",")[1].trim());
+	    		}
 	    		newEnd = newStart + newRange - 1;	    		
 	    		status = Status.lineNum;
 	    	}

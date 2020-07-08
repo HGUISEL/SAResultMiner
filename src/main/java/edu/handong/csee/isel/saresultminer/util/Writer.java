@@ -16,8 +16,26 @@ public class Writer {
 	String resultPath = "./Result.csv";
 	int cnt;
 	
-	public String writeChangedFiles(String changedFiles, String commitID, int cnt) {
-		File newDir = new File("./ChangedFilesList");
+	public void writeEmptyCSVFile(String path) {
+		String fileName = path;
+		System.out.println("INFO: There's no java file Change. Make Empty Report.");
+		long start = System.currentTimeMillis();
+		try(
+			BufferedWriter writer = Files.newBufferedWriter(Paths.get(fileName));
+			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
+			) {														
+			writer.flush();
+			writer.close();
+		} catch(IOException e){
+			e.printStackTrace();
+		}
+		long end = System.currentTimeMillis();
+		
+		System.out.println("INFO: Finish to Make Empty Report (" + (end - start)/1000 + " sec.)");
+	}
+	
+	public String writeChangedFiles(String changedFiles, String commitID, int cnt, String projectName) {
+		File newDir = new File("./ChangedFilesList/"+ projectName + File.separator);
 		if(!newDir.exists()) {
 			newDir.mkdir();
 		}
@@ -26,7 +44,7 @@ public class Writer {
 		System.out.println("INFO: Start to Write Changed Files List");
 		long start = System.currentTimeMillis();
 		try {			    
-			File file = new File("./ChangedFilesList/" + cnt +"_" +commitID + ".txt" );
+			File file = new File("./ChangedFilesList/"+ projectName + File.separator + cnt +"_" +commitID + ".txt" );
 			changedFilesPath = file.toString();
 			if (!file.exists()) {
 				file.createNewFile();
@@ -51,8 +69,8 @@ public class Writer {
 		return changedFilesPath;
 	}
 	
-	public void initResult(ArrayList<Result> results) {
-		String fileName = "./Result.csv";
+	public void initResult(ArrayList<Result> results, String projectName) {
+		String fileName = "./" + projectName + "_Result.csv";
 		System.out.println("INFO: Start to Initialize Result File");
 		long start = System.currentTimeMillis();
 		try(
@@ -74,8 +92,8 @@ public class Writer {
 		System.out.println("INFO: Finish to Initialize Result File (" + (end - start)/1000 + " sec.)");
 	}
 	
-	public void writeResult(ArrayList<Result> results) {
-		String fileName = "./Result.csv";
+	public void writeResult(ArrayList<Result> results, String projectName) {
+		String fileName = "./" + projectName + "_Result.csv";
 		System.out.println("INFO: Start to Initialize Result File");
 		long start = System.currentTimeMillis();
 		try(

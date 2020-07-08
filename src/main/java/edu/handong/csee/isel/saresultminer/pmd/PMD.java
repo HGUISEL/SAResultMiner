@@ -8,6 +8,9 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteWatchdog;
 
+import edu.handong.csee.isel.saresultminer.util.Reader;
+import edu.handong.csee.isel.saresultminer.util.Writer;
+
 public class PMD {	
 	String pmdCmd = "";
 	String reportPath = "";
@@ -16,8 +19,8 @@ public class PMD {
 		this.pmdCmd = pmdCmd;
 	}
 	
-	public void execute(String rule, String commitID, String dirPath, int cnt) {		
-		File newDir = new File("./PMDReports");
+	public void execute(String rule, String commitID, String dirPath, int cnt, String projectName) {		
+		File newDir = new File("./PMDReports/" + projectName + File.separator);
 		if(!newDir.exists()) {
 			newDir.mkdir();
 		}
@@ -31,7 +34,7 @@ public class PMD {
 		cmdLine.addArgument("-R");
 		cmdLine.addArgument(rule);
 		cmdLine.addArgument("-reportfile");
-		cmdLine.addArgument("./PMDReports/"+ cnt + "_" + commitID+".csv");
+		cmdLine.addArgument("./PMDReports/" + projectName + File.separator + cnt + "_" + commitID+".csv");
 		DefaultExecutor executor = new DefaultExecutor();
 		int[] exitValues = {0, 1, 4};
 		executor.setExitValues(exitValues);
@@ -44,15 +47,24 @@ public class PMD {
 			e.printStackTrace();
 		}
 		long end = System.currentTimeMillis();
-		reportPath = "./PMDReports/"+ cnt + "_" + commitID+ ".csv";
+		reportPath = "./PMDReports/" + projectName + File.separator + cnt + "_" + commitID + ".csv";
 		System.out.println("INFO: PMD Report Is Generated Commit ID: " + commitID + "(" + (end-start)/1000 + " sec.)");
 	}
 	
-	public void executeToChangedFiles(String commitID, String filePaths, int cnt) {		
+	public void executeToChangedFiles(String commitID, String filePaths, int cnt, String projectName) {		
 		File newDir = new File("./PMDReports");
 		if(!newDir.exists()) {
 			newDir.mkdir();
 		}
+		
+		Writer writer = new Writer();
+		Reader reader = new Reader();
+		String changedFileList = reader.readChagnedFileList(filePaths);
+		if(changedFileList.equals("Empty")) {
+			writer.writeEmptyCSVFile("./PMDReports/"+projectName+ File.separator + cnt + "_" + commitID+".csv");
+			return;
+		}
+		
 		System.out.println("INFO: PMD Start");
 		long start = System.currentTimeMillis();
 		try {				
@@ -63,7 +75,7 @@ public class PMD {
 		cmdLine.addArgument("-R");
 		cmdLine.addArgument("category/java/errorprone.xml/NullAssignment");
 		cmdLine.addArgument("-reportfile");
-		cmdLine.addArgument("./PMDReports/"+ cnt + "_" + commitID+".csv");
+		cmdLine.addArgument("./PMDReports/"+projectName+ File.separator + cnt + "_" + commitID+".csv");
 		DefaultExecutor executor = new DefaultExecutor();
 		int[] exitValues = {0, 1, 4};
 		executor.setExitValues(exitValues);
@@ -76,7 +88,7 @@ public class PMD {
 			e.printStackTrace();
 		}
 		long end = System.currentTimeMillis();
-		reportPath = "./PMDReports/"+ cnt + "_" + commitID+ ".csv";
+		reportPath = "./PMDReports/"+ projectName + File.separator + cnt + "_" + commitID+ ".csv";
 		System.out.println("INFO: PMD Report Is Generated Commit ID: " + commitID + "(" + (end-start)/1000 + " sec.)");
 	}
 	

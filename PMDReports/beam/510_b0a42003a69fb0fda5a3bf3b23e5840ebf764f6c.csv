@@ -1,0 +1,2 @@
+/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/util/ExposedByteArrayOutputStream.java:51:	Assigning an Object to null is a code smell.  Consider refactoring.
+/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/util/ExposedByteArrayOutputStream.java:112:	Assigning an Object to null is a code smell.  Consider refactoring.

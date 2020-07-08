@@ -1,0 +1,3 @@
+/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/util/gcsio/GoogleCloudStorageReadChannel.java:159:	Assigning an Object to null is a code smell.  Consider refactoring.
+/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/util/gcsio/GoogleCloudStorageReadChannel.java:342:	Assigning an Object to null is a code smell.  Consider refactoring.
+/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/util/gcsio/GoogleCloudStorageReadChannel.java:345:	Assigning an Object to null is a code smell.  Consider refactoring.

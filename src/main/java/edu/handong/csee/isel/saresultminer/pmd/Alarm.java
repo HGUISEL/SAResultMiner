@@ -17,13 +17,11 @@ public class Alarm {
 		
 	}
 	
-	public Alarm(String alarm) {
-		if(alarm.split(":").length > 2) {
+	public Alarm(String alarm) {		
 			dir = alarm.split(":")[0];
 			dir = "." + dir.split("/SAResultMiner")[1];
 			lineNum = alarm.split(":")[1];			
 			readFile(dir, lineNum);
-		}
 	}
 	
 	public Alarm(Result result) {

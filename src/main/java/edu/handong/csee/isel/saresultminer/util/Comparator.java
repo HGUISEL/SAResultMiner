@@ -24,6 +24,7 @@ public class Comparator {
 			if(fixedAlarm.getLineNum().equals("-1")) {
 				fixedAlarms.add(fixedAlarm);
 				changedAlarms.remove(idx);
+				idx--;
 			}
 			idx++;
 		}
@@ -39,6 +40,7 @@ public class Comparator {
 					if(alarm.getLineNum().equals(changedAlarm.getLineNum())) {
 						maintainedAlarms.add(changedAlarm);
 						newAlarms.remove(idx);
+						idx--;
 						break;						
 					}	
 				}

@@ -26,10 +26,17 @@ public class ResultUpdater {
 					if(alarm.getDir().trim().equals(change.getDir())) {
 						classifiedAlarm = classifyAlarms(alarm, change);
 						if(classifiedAlarm == null) {
-							//line or file is deleted
+							//file deleted
+							if(change.getNewStart() == 0 && change.getNewRange() == 0) {
+								alarm.setLineNum("0");
+								alarm.setCode("FILE IS DELETED");
+								changedAlarms.add(alarm);
+							} else {
+							//line is deleted
 							alarm.setLineNum("-1");
 							alarm.setCode(change.getChangedCode());
 							changedAlarms.add(alarm);
+							}
 							break;
 						}
 						else if(!alarm.getLineNum().equals(classifiedAlarm.getLineNum())) {

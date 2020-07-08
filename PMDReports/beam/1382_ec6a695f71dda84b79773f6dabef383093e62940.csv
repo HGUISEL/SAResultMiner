@@ -1,0 +1,1 @@
+/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/util/BigQueryTableRowIterator.java:403:	Assigning an Object to null is a code smell.  Consider refactoring.

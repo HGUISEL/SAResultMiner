@@ -36,6 +36,25 @@ public class Reader {
 		return "WRONG";
 	}
 	
+	public String readChagnedFileList(String path) {
+		File f = new File(path);
+		try {
+			FileReader fReader =new FileReader(f);
+			BufferedReader fBufReader = new BufferedReader(fReader);
+			String str = "";
+			
+			while((str = fBufReader.readLine()) != null) {
+				fBufReader.close();
+				return str;
+			}
+			fBufReader.close();
+		} 
+		catch (IOException e) {
+				e.printStackTrace();
+		}
+		return "Empty";
+	}
+	
 	public ArrayList<Alarm> readReportFile(String path){
 		File f = new File(path);
 		ArrayList<Alarm> alarms = new ArrayList<>();
@@ -46,8 +65,10 @@ public class Reader {
 			String alarm = "";		
 			
 			while((alarm = fBufReader.readLine()) != null) {
-				Alarm temp = new Alarm(alarm);
-				alarms.add(temp);
+				if(alarm.split(":").length > 2) {
+					Alarm temp = new Alarm(alarm);			
+					alarms.add(temp);
+				}
 			}
 			fBufReader.close();
 		} 
