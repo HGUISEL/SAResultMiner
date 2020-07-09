@@ -62,6 +62,7 @@ public class PMD {
 		String changedFileList = reader.readChagnedFileList(filePaths);
 		if(changedFileList.equals("Empty")) {
 			writer.writeEmptyCSVFile("./PMDReports/"+projectName+ File.separator + cnt + "_" + commitID+".csv");
+			reportPath = "./PMDReports/"+ projectName + File.separator + cnt + "_" + commitID+ ".csv";
 			return;
 		}
 		

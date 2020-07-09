@@ -11,6 +11,10 @@ plugins {
     id 'java-library'
 }
 
+apply plugin: 'application'
+
+mainClassName = 'edu.handong.csee.isel.saresultminer.Main'
+ 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.

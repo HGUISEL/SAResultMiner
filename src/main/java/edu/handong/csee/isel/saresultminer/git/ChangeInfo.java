@@ -2,6 +2,7 @@ package edu.handong.csee.isel.saresultminer.git;
 
 public class ChangeInfo {
 	String dir = "";
+	String changeType = "";
 	int oldRange = 0, oldStart = 0, oldEnd=0, newStart=0, newRange=0, newEnd=0;
 	String changedCode = "";
 	
@@ -9,7 +10,7 @@ public class ChangeInfo {
 	
 	}
 	
-	public ChangeInfo(String dir, int oldStart, int oldRange, int oldEnd, int newStart, int newRange, int newEnd, String changedCode) {
+	public ChangeInfo(String dir, String changeType, int oldStart, int oldRange, int oldEnd, int newStart, int newRange, int newEnd, String changedCode) {
 		this.dir = dir;
 		this.oldStart = oldStart;
 		this.oldRange = oldRange;
@@ -18,6 +19,11 @@ public class ChangeInfo {
 		this.newRange = newRange;
 		this.newEnd = newEnd;
 		this.changedCode = changedCode;
+		this.changeType = changeType;
+	}
+	
+	public String getChangeType() {
+		return changeType;
 	}
 	
 	public String getDir() {

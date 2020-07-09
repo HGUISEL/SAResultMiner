@@ -31,7 +31,7 @@ public class Checkout {
 			System.out.println("INFO: Checkout Finished" + "(" + (end-start)/1000 + " sec.)" + " Commit ID: " + commitID);
 		}
 	}
-	
+	@Deprecated
 	public void checkoutToMaster(Git git) {
 		System.out.println("INFO: Checkout to Master Start");
 		long start = System.currentTimeMillis();

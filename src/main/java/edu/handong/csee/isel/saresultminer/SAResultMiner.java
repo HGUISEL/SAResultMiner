@@ -58,10 +58,8 @@ public class SAResultMiner {
 		git = gitClone.clone(targetGitAddress);
 		
 		//get all commit id and latest commit id
-//		gitCheckout.checkoutToMaster(git);
 		commits.addAll(gitLog.getAllCommitID(git));
 		String latestCommitID = gitLog.getLatestCommitId();
-//		gitCheckout.checkoutToMaster(git);
 		/*
 		 * checkout to first version
 		 * @param git: a cloned git repository 		 
@@ -93,8 +91,7 @@ public class SAResultMiner {
 		int logSize = commits.size();
 		
 		//repeat until checking all commits
-		for(int i = 1; i < logSize; i ++) {
-			if(commits.get(i).getID().equals("11e842717f70298a4ea8436363b3101117685f60")) continue;
+		for(int i = 1; i < logSize; i ++) {			
 			for(Result result: results) {
 				alarmsInResult.add(new Alarm(result));
 			}			
@@ -105,12 +102,11 @@ public class SAResultMiner {
 			//1. find there are intersections between chagnedFiles and PMD reports			
 			//1-1. find their directory and changed info
 			//diff: get code of files which were changed
-//			if(!commits.get(i).getID().equals("d9f63feb2700131c6757c969de57b20c0a1327a1")) {
-//				continue;
-//			}
-//			System.out.println("break point");
-			try {
-				changeInfo = gitDiff.diffCommit(git, commits.get(i).getID(), gitClone.getProjectName());
+			if(commits.get(i).getID().equals("314ff2593c34f08a3aa9307b1d42c718869a5b24")) {
+				System.out.println("break point");
+			}
+			try {				
+				changeInfo = gitDiff.diffCommit(git, commits.get(i).getID(), commits.get(i-1).getID(), gitClone.getProjectName());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -119,23 +115,20 @@ public class SAResultMiner {
 			resultUpdater.updateResultLineNum(alarmsInResult, changeInfo);
 			alarmsInResult.clear();
 			ArrayList<Alarm> changedAlarms = resultUpdater.getChangedAlarms();
-			ArrayList<Alarm> unchangedAlarms = resultUpdater.getUnchangedAlarms();			
-			
-			System.out.println("********** Changed ************");
-			for(Alarm alarm : changedAlarms) {				
-				System.out.println(alarm.getCode());
-				System.out.println(alarm.getLineNum());				
-			}
-			
-			System.out.println("********** Unchanged ************");
-			for(Alarm alarm : unchangedAlarms) {												
-				System.out.println(alarm.getCode());
-				System.out.println(alarm.getLineNum());				
-			}
+			ArrayList<Alarm> unchangedAlarms = resultUpdater.getUnchangedAlarms();						
 			
 			//2-1. if in intersections, check pmd report after changed
 			//diff: get list of files which were changed
-			String changedFiles = gitDiff.getChangedFilesList(git, gitClone.getClonedPath());			
+			String changedFiles = "";
+			for(ChangeInfo change : changeInfo) {
+				if(change.getChangeType().equals("D")) continue;
+				if(change.getDir().equals("")) continue;
+				if(changedFiles.contains(change.getDir())) continue;
+				changedFiles += change.getDir() + ",";
+			}
+			if(changedFiles.contains("./TargetProjects/camel-k-runtime/camel-knative/src/main/java/org/apache/camel/component/knative/KnativeEndpoint.java")) {
+				System.out.println("break point");
+			}
 			//write a file which contains a comma delimited changed files list
 			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID(), i, gitClone.getProjectName());
 						
@@ -192,6 +185,7 @@ public class SAResultMiner {
 			
 			comparator.init();
 			resultUpdater.init();
+			alarms.clear();
 			
 			//write updated pmd report and its codes
 			writer.writeResult(results, gitClone.getProjectName());

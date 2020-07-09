@@ -3,17 +3,17 @@
 
 # Ignore Gradle build output directory
 build
-
+ChangedFilesList/
 .DS_Store
 .classpath
 .gitattributes
-.project
-.csv
-
+*.project
+*.csv
+TargetProjects/
 gradlew
 gradlew.bat
 settings.gradle
 *.txt
-.settings
+*.settings
 bin
 gradle/wrapper
