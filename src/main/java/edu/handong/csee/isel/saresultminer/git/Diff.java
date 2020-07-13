@@ -78,9 +78,6 @@ public class Diff {
 	        newCommit = walk.parseCommit(git.getRepository().resolve(commitID));
 	    }	 
 	    String codeChange = getDiffOfCommit(newCommit, prevCommitID, git);
-	    if(commitID.equals("1bc48d98659d69dd36cbd30736f165211b9c37e0")) {
-	    	System.out.println(codeChange);
-		}
 	    
 //	    System.out.println(codeChange);
 	    String[] codeChangeSplitByNewLine = codeChange.split("\n");
@@ -191,7 +188,7 @@ public class Diff {
 	    AbstractTreeIterator oldTreeIterator = getCanonicalTreeParser(oldCommit, git);
 	    AbstractTreeIterator newTreeIterator = getCanonicalTreeParser(newCommit, git);	    
 	    OutputStream outputStream = new ByteArrayOutputStream();
-	    try {			
+	    try {	    	
 			git.diff().setOldTree(oldTreeIterator).setNewTree(newTreeIterator).setOutputStream(outputStream).call();
 		} catch (GitAPIException e) {
 			e.printStackTrace();

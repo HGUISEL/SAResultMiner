@@ -102,7 +102,7 @@ public class SAResultMiner {
 			//1. find there are intersections between chagnedFiles and PMD reports			
 			//1-1. find their directory and changed info
 			//diff: get code of files which were changed
-			if(commits.get(i).getID().equals("314ff2593c34f08a3aa9307b1d42c718869a5b24")) {
+			if(commits.get(i).getID().equals("5c1bb3943d78c4046c81731be5a43b740a928419")) {
 				System.out.println("break point");
 			}
 			try {				
@@ -126,9 +126,7 @@ public class SAResultMiner {
 				if(changedFiles.contains(change.getDir())) continue;
 				changedFiles += change.getDir() + ",";
 			}
-			if(changedFiles.contains("./TargetProjects/camel-k-runtime/camel-knative/src/main/java/org/apache/camel/component/knative/KnativeEndpoint.java")) {
-				System.out.println("break point");
-			}
+
 			//write a file which contains a comma delimited changed files list
 			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID(), i, gitClone.getProjectName());
 						

@@ -89,7 +89,7 @@ public class ResultUpdater {
 				}
 			}			
 		}
-		return null;
+		return alarm;
 	}
 	
 	public ArrayList<Alarm> getChangedAlarms(){
