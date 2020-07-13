@@ -106,7 +106,7 @@ public class Diff {
 	    		else oldEnd = oldStart + oldRange - 1;
 	    		
 	    		String newPart = change.split("\\+")[1];	    		
-	    		newStart = Integer.parseInt(newPart.split(",")[0]);
+	    		newStart = Integer.parseInt(newPart.split(",")[0].trim());
 	    		newRange = Integer.parseInt(newPart.split(",")[1].trim());
 	    		newEnd = newStart + newRange - 1;	    		
 	    		

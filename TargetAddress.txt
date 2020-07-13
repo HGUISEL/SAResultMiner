@@ -1,1 +1,2 @@
-https://github.com/apache/zeppelin.git
+https://github.com/YoonhoChoi96/testNA.git
+https://github.com/apache/maven-dependency-analyzer.git

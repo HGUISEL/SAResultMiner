@@ -50,11 +50,16 @@ public class SAResultMiner {
 		long start = System.currentTimeMillis();
 		
 		//read input
-		targetGitAddress = reader.readInput(input);
+//		targetGitAddress = reader.readInput(input);
+		//read input list
+		ArrayList<String> inputList = new ArrayList<>();
+		inputList.addAll(reader.readInputList(input));
+		for(int k = 0 ; k < inputList.size(); k ++) {
+		targetGitAddress = inputList.get(k);
 		//readInput test
 		System.out.println("INFO: Target Project is " + targetGitAddress);		
 		
-		//git clone
+		//git clone		
 		git = gitClone.clone(targetGitAddress);
 		
 		//get all commit id and latest commit id
@@ -184,11 +189,14 @@ public class SAResultMiner {
 			comparator.init();
 			resultUpdater.init();
 			alarms.clear();
-			
+			long end = System.currentTimeMillis();
 			//write updated pmd report and its codes
-			writer.writeResult(results, gitClone.getProjectName());
-		}					
-		long end = System.currentTimeMillis();
-		System.out.println("FINAL RESULT IS GENERATED!! (TOTAL: " + (end-start)/1000 + " sec.)" );
+			writer.writeResult(results, gitClone.getProjectName(), (end-start)/1000);
+		}
+		git.close();
+		commits.clear();
+		results.clear();
+//		System.out.println("FINAL RESULT IS GENERATED!! (TOTAL: " + (end-start)/1000 + " sec.)" );
 	}			
+	}
 }

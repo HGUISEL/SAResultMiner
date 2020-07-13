@@ -36,6 +36,26 @@ public class Reader {
 		return "WRONG";
 	}
 	
+	public ArrayList<String> readInputList(String path) {
+		File f = new File(path);
+		ArrayList<String> addresses = new ArrayList<>();
+		try {
+			FileReader fReader =new FileReader(f);
+			BufferedReader fBufReader = new BufferedReader(fReader);
+			String str = "";
+			
+			while((str = fBufReader.readLine()) != null) {
+				addresses.add(str);
+			}			
+			fBufReader.close();
+			return addresses;
+		} 
+		catch (IOException e) {
+				e.printStackTrace();
+		}
+		return new ArrayList<String>() ;
+	}
+	
 	public String readChagnedFileList(String path) {
 		File f = new File(path);
 		try {
