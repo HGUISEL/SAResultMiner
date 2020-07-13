@@ -1,1 +1,1 @@
-https://github.com/apache/ignite-teamcity-bot
+https://github.com/apache/zeppelin.git

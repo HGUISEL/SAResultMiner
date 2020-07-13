@@ -35,7 +35,7 @@ public class Writer {
 	}
 	
 	public String writeChangedFiles(String changedFiles, String commitID, int cnt, String projectName) {
-		File newDir = new File("./ChangedFilesList/"+ projectName + File.separator);
+		File newDir = new File("." + File.separator+"ChangedFilesList"+File.separator+ projectName + File.separator);
 		if(!newDir.exists()) {
 			newDir.mkdir();
 		}
@@ -44,7 +44,7 @@ public class Writer {
 		System.out.println("INFO: Start to Write Changed Files List");
 		long start = System.currentTimeMillis();
 		try {			    
-			File file = new File("./ChangedFilesList/"+ projectName + File.separator + cnt +"_" +commitID + ".txt" );
+			File file = new File("."+ File.separator+"ChangedFilesList"+File.separator+ projectName + File.separator + cnt +"_" +commitID + ".txt" );
 			changedFilesPath = file.toString();
 			if (!file.exists()) {
 				file.createNewFile();
