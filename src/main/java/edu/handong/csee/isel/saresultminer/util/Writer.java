@@ -37,7 +37,7 @@ public class Writer {
 	public String writeChangedFiles(String changedFiles, String commitID, int cnt, String projectName) {
 		File newDir = new File("." + File.separator+"ChangedFilesList"+File.separator+ projectName + File.separator);
 		if(!newDir.exists()) {
-			newDir.mkdir();
+			newDir.mkdirs();
 		}
 		
 		BufferedWriter bw = null;
