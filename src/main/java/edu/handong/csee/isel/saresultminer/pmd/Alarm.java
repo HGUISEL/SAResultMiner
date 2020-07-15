@@ -11,7 +11,8 @@ public class Alarm {
 	int detectionIDInResult = 0;
 	String dir = "";
 	String lineNum = "";
-	String code = "";		
+	String code = "";
+	String status = "";
 	
 	public Alarm() {
 		
@@ -27,9 +28,14 @@ public class Alarm {
 	public Alarm(Result result) {
 		detectionIDInResult = result.getDetectionID();
 		dir =result.getFilePath();
-		if(result.getLDCLineNum().equals(""))
+		if(result.getLDCLineNum().equals("")) {
 			lineNum = result.getVICLineNum();
+			status = "LDC";
+		}
 		else lineNum = result.getLDCLineNum();
+		if(!result.getVFCID().equals("")) {
+			status = "VFC";
+		}
 		code = result.getOriginCode();
 	}
 	
@@ -37,6 +43,10 @@ public class Alarm {
 		dir = path;
 		this.lineNum = lineNum;
 		this.code = code;
+	}
+	
+	public String getStatus() {
+		return status;
 	}
 	
 	public int getDetectionIDInResult() {

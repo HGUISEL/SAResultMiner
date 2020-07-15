@@ -71,17 +71,75 @@ public class Diff {
 		return changedFiles;
 	}
 	
-	public ArrayList<ChangeInfo> diffCommit(Git git, String commitID, String prevCommitID, String projectName) throws IOException {				
-		//Get the commit you are looking for.
-	    RevCommit newCommit;
-	    try (RevWalk walk = new RevWalk(git.getRepository())) {
-	        newCommit = walk.parseCommit(git.getRepository().resolve(commitID));
-	    }	 
-	    String codeChange = getDiffOfCommit(newCommit, prevCommitID, git);
+	public ArrayList<ChangeInfo> diffCommit(Git git, String projectName) throws IOException {							    
+	    String codeChange = getDiffOfCommit(git);
 	    
 //	    System.out.println(codeChange);
-	    String[] codeChangeSplitByNewLine = codeChange.split("\n");
+	    String[] codeChangeSplitByNewLine = codeChange.split("\n");	    
 	    ArrayList<ChangeInfo> changeInfo = new ArrayList<>();
+	    changeInfo.addAll(getChangeInfos(codeChangeSplitByNewLine, projectName));
+	    
+//	    for(ChangeInfo temp : changeInfo) {
+//		    System.out.println(temp.getDir()+ " Old (Start: " + temp.getOldStart() + " End: " + temp.getOldEnd() + ")  New ( Start: " + temp.getNewStart() + " End: " + temp.getNewEnd() + "\n" + temp.getChangedCode());	    	
+//	    }
+
+	    return changeInfo;
+	}
+	
+	private String getDiffOfCommit(Git git) throws IOException {
+	    AbstractTreeIterator oldTreeIterator = getOldCanonicalTreeParser(git);
+	    AbstractTreeIterator newTreeIterator = getNewCanonicalTreeParser(git);	    
+	    OutputStream outputStream = new ByteArrayOutputStream();
+	    try {	    	
+			git.diff().setOldTree(oldTreeIterator).setNewTree(newTreeIterator).setOutputStream(outputStream).call();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	    
+//	    try (DiffFormatter formatter = new DiffFormatter(outputStream)) {
+//	        formatter.setRepository(git.getRepository());
+//	        formatter.format(oldTreeIterator, newTreeIterator);	        
+//	    }
+	    String diff = outputStream.toString();
+	    return diff;
+	}
+
+	public RevCommit getPrevHash(RevCommit commit, Git git)  throws  IOException {
+
+	    try (RevWalk walk = new RevWalk(git.getRepository())) {
+	        walk.markStart(commit);	        
+	        int count = 0;
+	        for (RevCommit rev : walk) {
+	            if (count == 1) {
+	                return rev;
+	            }
+	            count++;
+	        }
+	        walk.dispose();
+	    }
+	    return null;
+	}
+
+	private AbstractTreeIterator getOldCanonicalTreeParser(Git git) throws IOException {
+		ObjectReader reader = git.getRepository().newObjectReader();
+		CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+		ObjectId oldTree = git.getRepository().resolve( "HEAD~1^{tree}" );
+		oldTreeIter.reset( reader, oldTree );
+		
+		return oldTreeIter;
+	}
+	
+	private AbstractTreeIterator getNewCanonicalTreeParser(Git git) throws IOException {
+		ObjectReader reader = git.getRepository().newObjectReader();
+		CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+		ObjectId newTree;
+		newTree = git.getRepository().resolve( "HEAD^{tree}" );
+		newTreeIter.reset( reader, newTree );
+		
+		return newTreeIter;
+	}
+	private ArrayList<ChangeInfo> getChangeInfos(String[] codeChangeSplitByNewLine, String projectName) {
+		ArrayList<ChangeInfo> changeInfo = new ArrayList<>();
 	    Status status = Status.idle;
 	    int oldRange = 0, oldStart = 0, oldEnd=0, newStart=0, newRange=0, newEnd=0;
 	    String code = "";
@@ -98,17 +156,27 @@ public class Diff {
 	    	else if(status == Status.diff && change.contains("@@")) {
 
 	    		change = change.replaceAll("@@", "");
-
+	    		
 	    		String oldPart = change.split("\\+")[0];
-	    		oldRange = Integer.parseInt(oldPart.split(",")[1].trim());
-	    		oldStart = Integer.parseInt(oldPart.split(",")[0].replace("-", "").trim());
+	    		if(!oldPart.contains(",")) {
+	    			oldStart = 0;
+	    			oldRange = 0;
+	    		} else {
+	    			oldRange = Integer.parseInt(oldPart.split(",")[1].trim());
+	    			oldStart = Integer.parseInt(oldPart.split(",")[0].replace("-", "").trim());
+	    		}
 	    		if(oldStart == 0 && oldRange == 0) oldEnd = 0;
 	    		else oldEnd = oldStart + oldRange - 1;
 	    		
-	    		String newPart = change.split("\\+")[1];	    		
-	    		newStart = Integer.parseInt(newPart.split(",")[0].trim());
-	    		newRange = Integer.parseInt(newPart.split(",")[1].trim());
-	    		newEnd = newStart + newRange - 1;	    		
+	    		String newPart = change.split("\\+")[1];
+	    		if(!newPart.contains(",")) {
+	    			newStart = Integer.parseInt(newPart.split(",")[0].trim());
+		    		newRange = 0;
+	    		}else {
+	    			newStart = Integer.parseInt(newPart.split(",")[0].trim());
+	    			newRange = Integer.parseInt(newPart.split(",")[1].trim());
+	    		}
+	    		newEnd = newStart + newRange - 1;	    			    			    	
 	    		
 	    		status = Status.lineNum;
 	    	}	    	
@@ -165,67 +233,6 @@ public class Diff {
 	    	}	    	
 	    	cnt ++;
 	    }
-//	    for(ChangeInfo temp : changeInfo) {
-//		    System.out.println(temp.getDir()+ " Old (Start: " + temp.getOldStart() + " End: " + temp.getOldEnd() + ")  New ( Start: " + temp.getNewStart() + " End: " + temp.getNewEnd() + "\n" + temp.getChangedCode());	    	
-//	    }
-
 	    return changeInfo;
 	}
-	
-	private String getDiffOfCommit(RevCommit newCommit, String prevCommitID, Git git) throws IOException {
-	    RevCommit oldCommit = null;
-		for(RevCommit prevCommit : newCommit.getParents()) {
-			String oldCommitID = prevCommit.getId().toString().split(" ")[1];
-	    	if(oldCommitID.equals(prevCommitID)) {
-	    		oldCommit = prevCommit;
-	    	}
-	    }
-//		RevCommit oldCommit = getPrevHash(newCommit, git);
-	    if(oldCommit == null){
-	        return "Start of repo";
-	    }
-
-	    AbstractTreeIterator oldTreeIterator = getCanonicalTreeParser(oldCommit, git);
-	    AbstractTreeIterator newTreeIterator = getCanonicalTreeParser(newCommit, git);	    
-	    OutputStream outputStream = new ByteArrayOutputStream();
-	    try {	    	
-			git.diff().setOldTree(oldTreeIterator).setNewTree(newTreeIterator).setOutputStream(outputStream).call();
-		} catch (GitAPIException e) {
-			e.printStackTrace();
-		}
-	    
-//	    try (DiffFormatter formatter = new DiffFormatter(outputStream)) {
-//	        formatter.setRepository(git.getRepository());
-//	        formatter.format(oldTreeIterator, newTreeIterator);	        
-//	    }
-	    String diff = outputStream.toString();
-	    return diff;
-	}
-
-	public RevCommit getPrevHash(RevCommit commit, Git git)  throws  IOException {
-
-	    try (RevWalk walk = new RevWalk(git.getRepository())) {
-	        walk.markStart(commit);	        
-	        int count = 0;
-	        for (RevCommit rev : walk) {
-	            if (count == 1) {
-	                return rev;
-	            }
-	            count++;
-	        }
-	        walk.dispose();
-	    }
-	    return null;
-	}
-
-	private AbstractTreeIterator getCanonicalTreeParser(ObjectId commitId, Git git) throws IOException {
-	    try (RevWalk walk = new RevWalk(git.getRepository())) {
-	        RevCommit commit = walk.parseCommit(commitId);
-	        ObjectId treeId = commit.getTree().getId();
-	        try (ObjectReader reader = git.getRepository().newObjectReader()) {
-	            return new CanonicalTreeParser(null, reader, treeId);
-	        }
-	    }
-	}
-	
 }

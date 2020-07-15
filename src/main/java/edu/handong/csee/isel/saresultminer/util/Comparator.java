@@ -21,7 +21,7 @@ public class Comparator {
 		tempAlarms.addAll(changedAlarms);
 		int idx = 0;
 		for(Alarm fixedAlarm : tempAlarms) {
-			if(fixedAlarm.getLineNum().equals("-1")) {
+			if(fixedAlarm.getLineNum().equals("-1") || fixedAlarm.getLineNum().equals("0")) {
 				fixedAlarms.add(fixedAlarm);
 				changedAlarms.remove(idx);
 				idx--;

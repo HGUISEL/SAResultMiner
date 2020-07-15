@@ -107,11 +107,19 @@ public class SAResultMiner {
 			//1. find there are intersections between chagnedFiles and PMD reports			
 			//1-1. find their directory and changed info
 			//diff: get code of files which were changed
-			if(commits.get(i).getID().equals("5c1bb3943d78c4046c81731be5a43b740a928419")) {
+			if(commits.get(i).getID().equals("e9679f8e14e4529ba742687913f2080bcd85e57a")) {
+				System.out.println("break point");
+			}
+			
+			if(commits.get(i).getID().equals("597f518ed5d49219a80ffd5e859208f94c9865a7")) {
+				System.out.println("break point");
+			}
+			if(commits.get(i).getID().equals("8d9f2f441e3482ba921ae3410aa886ce2b5014ed")) {
+
 				System.out.println("break point");
 			}
 			try {				
-				changeInfo = gitDiff.diffCommit(git, commits.get(i).getID(), commits.get(i-1).getID(), gitClone.getProjectName());
+				changeInfo = gitDiff.diffCommit(git, gitClone.getProjectName());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -196,7 +204,8 @@ public class SAResultMiner {
 		git.close();
 		commits.clear();
 		results.clear();
-//		System.out.println("FINAL RESULT IS GENERATED!! (TOTAL: " + (end-start)/1000 + " sec.)" );
-	}			
+		
+	}	
+		System.out.println("FINAL RESULT IS GENERATED!!" );
 	}
 }
