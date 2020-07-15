@@ -28,11 +28,12 @@ public class Alarm {
 	public Alarm(Result result) {
 		detectionIDInResult = result.getDetectionID();
 		dir =result.getFilePath();
-		if(result.getLDCLineNum().equals("")) {
-			lineNum = result.getVICLineNum();
+		if(!result.getLDCLineNum().equals("")) {
+			lineNum = result.getLDCLineNum();
 			status = "LDC";
 		}
-		else lineNum = result.getLDCLineNum();
+		else lineNum = result.getVICLineNum();
+		
 		if(!result.getVFCID().equals("")) {
 			status = "VFC";
 		}

@@ -98,6 +98,7 @@ public class SAResultMiner {
 		//repeat until checking all commits
 		for(int i = 1; i < logSize; i ++) {			
 			for(Result result: results) {
+				if(result.getFixedCode().equals("FILE IS DELETED")) continue;
 				alarmsInResult.add(new Alarm(result));
 			}			
 			
@@ -111,10 +112,10 @@ public class SAResultMiner {
 				System.out.println("break point");
 			}
 			
-			if(commits.get(i).getID().equals("597f518ed5d49219a80ffd5e859208f94c9865a7")) {
+			if(commits.get(i).getID().equals("c1d11121d98da3310998b73ecd7dad27860cf748")) {
 				System.out.println("break point");
 			}
-			if(commits.get(i).getID().equals("8d9f2f441e3482ba921ae3410aa886ce2b5014ed")) {
+			if(commits.get(i).getID().equals("8a00f65e6794b3f6be6836447b5b9474d2246633")) {
 
 				System.out.println("break point");
 			}

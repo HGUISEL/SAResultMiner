@@ -12,6 +12,7 @@ import edu.handong.csee.isel.saresultminer.pmd.Alarm;
 public class ResultUpdater {
 	ArrayList<Alarm> changedAlarms = new ArrayList<>();
 	ArrayList<Alarm> unchangedAlarms = new ArrayList<>();
+	ArrayList<Integer> sameCodes = new ArrayList<>();
 	
 	public void init() {
 		changedAlarms.clear();
@@ -55,7 +56,17 @@ public class ResultUpdater {
 					cnt ++;
 				}
 				if(changes.size() == cnt) {
-					alarm.setLineNum(getLineNum(alarm, originAlarmedLine));
+					
+					getLineNum(alarm, originAlarmedLine);
+					int sameCount = 0;
+					if(sameCodes.size() >= 2) {						
+						for(Alarm tempAlarm: unchangedAlarms) {
+							if(tempAlarm.getDir().equals(alarm.getDir()) && tempAlarm.getCode().equals(alarm.getCode()) ) {
+								sameCount++;
+							}
+						}
+					}
+					alarm.setLineNum("" + sameCodes.get(sameCount));
 					unchangedAlarms.add(alarm);
 				}
 			}
@@ -123,7 +134,8 @@ public class ResultUpdater {
 		return alarm;
 	}
 	
-	private String getLineNum(Alarm alarm, String originLineNum) {		
+	private String getLineNum(Alarm alarm, String originLineNum) {
+		sameCodes.clear();
 		File f = new File(alarm.getDir());
 		if(!f.exists()) {
 			return "File Doesn't Exist";
@@ -132,7 +144,7 @@ public class ResultUpdater {
 		int originLineNumber = Integer.parseInt(originLineNum);
 		int cnt = 1;
 		ArrayList<String> codes = new ArrayList<>();
-		ArrayList<Integer> sameCodes = new ArrayList<>();
+		
 		try {
 			FileReader fReader =new FileReader(f);
 			BufferedReader fBufReader = new BufferedReader(fReader);
@@ -154,16 +166,15 @@ public class ResultUpdater {
 		
 		if(codes.get(lineNum-1).equals(alarm.getCode())) {
 			return alarm.getLineNum();
-		} else if(codes.get(originLineNumber-1).equals(alarm.getCode())) {
+		} else if(codes.size() > originLineNumber-1 && codes.get(originLineNumber-1).equals(alarm.getCode())) {
 			return originLineNum; 
 		} else {
 			if(sameCodes.size() == 1) {				
 				return "" + sameCodes.get(0); 
 			} else {
-				System.out.println("Break");
+				return "";
 			}
-		}
-		return "";
+		}		
 	}
 	
 	public ArrayList<Alarm> getChangedAlarms(){
