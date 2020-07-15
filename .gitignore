@@ -1,5 +1,6 @@
 # Ignore Gradle project-specific cache directory
 .gradle
+*.csv
 
 # Ignore Gradle build output directory
 build
@@ -8,7 +9,6 @@ ChangedFilesList/
 .classpath
 .gitattributes
 *.project
-*.csv
 TargetProjects/
 gradlew
 gradlew.bat
@@ -16,4 +16,6 @@ settings.gradle
 *.txt
 *.settings
 bin
+PMDReports/
+SAResultMiner/
 gradle/wrapper
