@@ -46,15 +46,14 @@ public class SAResultMiner {
 		ResultUpdater resultUpdater = new ResultUpdater();
 		ArrayList<Result> results = new ArrayList<>();
 		int detectionID = 0;
-		
-		long start = System.currentTimeMillis();
-		
+				
 		//read input
 //		targetGitAddress = reader.readInput(input);
 		//read input list
 		ArrayList<String> inputList = new ArrayList<>();
 		inputList.addAll(reader.readInputList(input));
 		for(int k = 0 ; k < inputList.size(); k ++) {
+		long start = System.currentTimeMillis();
 		targetGitAddress = inputList.get(k);
 		//readInput test
 		System.out.println("INFO: Target Project is " + targetGitAddress);		
@@ -205,6 +204,7 @@ public class SAResultMiner {
 		git.close();
 		commits.clear();
 		results.clear();
+		detectionID = 0;
 		
 	}	
 		System.out.println("FINAL RESULT IS GENERATED!!" );
