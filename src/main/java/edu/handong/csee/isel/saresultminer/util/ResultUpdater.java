@@ -62,7 +62,9 @@ public class ResultUpdater {
 							}
 						}
 					}
-					alarm.setLineNum("" + sameCodes.get(sameCount));
+					if(sameCodes.size() >= 1) {
+						alarm.setLineNum("" + sameCodes.get(sameCount));
+					}
 					unchangedAlarms.add(alarm);
 				}
 			}
