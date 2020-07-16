@@ -30,12 +30,19 @@ public class Log {
 				else if(commit.getParentCount() == 0) {
 					continue;
 				}
-				Commit info = new Commit(commit.getName(), "" + commit.getCommitTime());
+				String date[] = commit.getAuthorIdent().getWhen().toString().split(" ");
+				String dateString = "";
+				if(Integer.parseInt(date[2])/10 == 0) {
+					dateString = date[5] + "-" + getMonth(date[1]) + "-" + date[2];
+				} else {
+					dateString = date[5] + "-" + getMonth(date[1]) + "-" + date[2];
+				}
+				Commit info = new Commit(commit.getName(), "" + dateString);
 				commits.add(info);								
 			}
 			
 			RevCommit firstCommit = getLastElement(logs2);
-			commits.add(new Commit(firstCommit.getName(), "" + firstCommit.getCommitTime()));
+			commits.add(new Commit(firstCommit.getName(), "" + firstCommit.getAuthorIdent().getWhen()));
 			
 			//first commit in index 0
 			Collections.reverse(commits);
@@ -50,6 +57,21 @@ public class Log {
 		}
 		
 		return commits;
+	}
+	
+	private String getMonth(String letterMonth) {
+		if(letterMonth.equals("Jan")) return "01";
+		else if(letterMonth.equals("Feb")) return "02";
+		else if(letterMonth.equals("Mar")) return "03";
+		else if(letterMonth.equals("Apr")) return "04";
+		else if(letterMonth.equals("May")) return "05";
+		else if(letterMonth.equals("Jun")) return "06";
+		else if(letterMonth.equals("Jul")) return "07";
+		else if(letterMonth.equals("Aug")) return "08";
+		else if(letterMonth.equals("Sep")) return "09";
+		else if(letterMonth.equals("Oct")) return "10";
+		else if(letterMonth.equals("Nov")) return "11";
+		else return "12";
 	}
 	
 	private RevCommit getLastElement(Iterable<RevCommit> elements) {

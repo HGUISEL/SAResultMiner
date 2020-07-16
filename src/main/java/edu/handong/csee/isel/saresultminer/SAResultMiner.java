@@ -1,7 +1,10 @@
 package edu.handong.csee.isel.saresultminer;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.eclipse.jgit.api.Git;
 
@@ -162,7 +165,7 @@ public class SAResultMiner {
 						tempResult.setVFCID(commits.get(i).getID());
 						tempResult.setVFCLineNum(fixedAlarm.getLineNum());
 						tempResult.setVFCDate(commits.get(i).getTime());
-						tempResult.setFixedPeriod(tempResult.getVFCDate()+"/"+tempResult.getVICDate());
+						tempResult.setFixedPeriod(calDate(tempResult.getVFCDate(), tempResult.getVICDate()));
 						tempResult.setFixedCode(fixedAlarm.getCode());	
 						results.set(j, tempResult);
 						break;
@@ -209,4 +212,24 @@ public class SAResultMiner {
 	}	
 		System.out.println("FINAL RESULT IS GENERATED!!" );
 	}
+	
+	public String calDate(String date1, String date2){	 
+	    try{ 
+	        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+	        
+	        Date FirstDate = format.parse(date1);
+	        Date SecondDate = format.parse(date2);
+	        	        
+	        long calDate = FirstDate.getTime() - SecondDate.getTime(); 
+	        	     
+	        long calDateDays = calDate / ( 24*60*60*1000); 
+	 
+	        calDateDays = Math.abs(calDateDays);
+	        
+	        return "" + calDateDays;
+	    }
+	    catch(ParseException e) {
+	    	return "Error";
+	    }	        
+	}		
 }
