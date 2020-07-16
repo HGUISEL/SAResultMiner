@@ -112,10 +112,10 @@ public class SAResultMiner {
 				System.out.println("break point");
 			}
 			
-			if(commits.get(i).getID().equals("c1d11121d98da3310998b73ecd7dad27860cf748")) {
+			if(commits.get(i).getID().equals("242d9aaacfec05de2875e3cc41ee3cc808691da3")) {
 				System.out.println("break point");
 			}
-			if(commits.get(i).getID().equals("8a00f65e6794b3f6be6836447b5b9474d2246633")) {
+			if(commits.get(i).getID().equals("de03f99940ce5ba2ea267049031dc8ec4c6fb2ea")) {
 
 				System.out.println("break point");
 			}

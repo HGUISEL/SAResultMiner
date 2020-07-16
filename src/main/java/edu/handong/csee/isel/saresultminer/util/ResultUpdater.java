@@ -20,7 +20,6 @@ public class ResultUpdater {
 	}
 	
 	public void updateResultLineNum(ArrayList<Alarm> alarms, ArrayList<ChangeInfo> changes) {
-		
 		if(alarms.size() == 0 || changes.size() == 0) {
 			return;
 		} else {
@@ -29,9 +28,11 @@ public class ResultUpdater {
 				String originAlarmedLine = "" + alarm.getLineNum().trim();
 				Alarm classifiedAlarm = new Alarm();
 				int cnt = 0;
+				int flag = 0;
 				for(ChangeInfo change : changes) {
-					if(alarm.getDir().trim().equals(change.getDir())) {
-						classifiedAlarm = classifyAlarms(alarm, change);
+					if(alarm.getDir().trim().equals(change.getDir())) {						
+						classifiedAlarm = classifyAlarms(alarm, change, flag);
+						flag = 1;
 						if(classifiedAlarm == null) {
 							//file deleted
 							if(change.getNewStart() == 0 && change.getNewRange() == 0) {
@@ -47,16 +48,11 @@ public class ResultUpdater {
 							break;
 							}							
 						}
-						else if(!alarm.getLineNum().equals(classifiedAlarm.getLineNum())) {
-							classifiedAlarm.setDetectionIDInResult(alarm.getDetectionIDInResult());
-							changedAlarms.add(classifiedAlarm);
-							break;
-						}
 					}
 					cnt ++;
 				}
+				flag = 0;
 				if(changes.size() == cnt) {
-					
 					getLineNum(alarm, originAlarmedLine);
 					int sameCount = 0;
 					if(sameCodes.size() >= 2) {						
@@ -73,38 +69,41 @@ public class ResultUpdater {
 		}
 	}
 	
-	private Alarm classifyAlarms(Alarm alarm, ChangeInfo change) {		
-		int alarmLine = Integer.parseInt(alarm.getLineNum().trim());
+	private Alarm classifyAlarms(Alarm alarm, ChangeInfo change, int dirFlag) {
+		Alarm tempAlarm = new Alarm(alarm);
+		
+		int alarmLine = Integer.parseInt(tempAlarm.getLineNum().trim());		
 		int flag = 0;
+
 		if(change.getNewStart() == 0 && change.getNewRange() == 0) {
 			//file is deleted
 			return null;
 		}
-		
+
 		if(alarmLine <= change.getOldStart()) {			
-				return alarm;						
+			return tempAlarm;						
 		} 
 		else if(change.getOldStart() != 0 && change.getOldRange() != 0 && alarmLine >= change.getOldEnd()) {
 			int changedLine = alarmLine + change.getNewRange() - change.getOldRange();
-			alarm.setLineNum("" + changedLine);
-			return alarm;
+			tempAlarm.setLineNum("" + changedLine);
+			return tempAlarm;
 		} 
 		else if(change.getOldStart() == 0 && change.getOldRange() == 0) {			
 			int changedLineNum = 0;			
-			if(change.getChangedCode().contains(alarm.getCode())) {
+			if(change.getChangedCode().contains(tempAlarm.getCode())) {
 				changedLineNum = change.getNewStart();
 				for(String codeLine : change.getChangedCode().split("\n")) {					
 					String [] splitCode = change.getChangedCode().split("\n");
-					String alarmedCode = alarm.getCode().trim();
+					String alarmedCode = tempAlarm.getCode().trim();
 					String predictedCode = splitCode[alarmLine-1].replaceAll("[+-]"," ").trim();
 					if(flag == 0 && alarmedCode.equals(predictedCode)) {
-						alarm.setLineNum("" + alarmLine);
+						tempAlarm.setLineNum("" + alarmLine);
 						flag = 1;
-						return alarm;
+						return tempAlarm;
 					}
-					if(codeLine.split(" ").length > 1 &&codeLine.split(" ", 2)[1].trim().equals(alarm.getCode().trim())) {																		
-							alarm.setLineNum("" + changedLineNum);
-							return alarm;										
+					if(codeLine.split(" ").length > 1 &&codeLine.split(" ", 2)[1].trim().equals(tempAlarm.getCode().trim())) {																		
+							tempAlarm.setLineNum("" + changedLineNum);
+							return tempAlarm;										
 					} else if(codeLine.startsWith(" ") || codeLine.startsWith("+")) {
 						changedLineNum++;
 					}					
@@ -113,25 +112,25 @@ public class ResultUpdater {
 		}
 		else if(change.getOldStart() < alarmLine && alarmLine < change.getOldEnd()) {
 			int changedLineNum = 0;			
-			if(change.getChangedCode().contains(alarm.getCode())) {
+			if(change.getChangedCode().contains(tempAlarm.getCode())) {
 				changedLineNum = change.getNewStart();
 				for(String codeLine : change.getChangedCode().split("\n")) {
-					if(codeLine.split(" ").length > 1 &&codeLine.split(" ", 2)[1].trim().equals(alarm.getCode().trim())) {						
+					if(codeLine.split(" ").length > 1 &&codeLine.split(" ", 2)[1].trim().equals(tempAlarm.getCode().trim())) {						
 						if(codeLine.startsWith("-")) {
 							//violating code line is deleted
 							return null;
 						} else {
-							alarm.setLineNum("" + changedLineNum);
-							return alarm;
+							tempAlarm.setLineNum("" + changedLineNum);
+							return tempAlarm;
 						}						
 					} else if(codeLine.startsWith(" ") || codeLine.startsWith("+")) {
 						changedLineNum++;
-					}
-					
+					}						
 				}
 			}			
 		}
-		return alarm;
+		 
+		return tempAlarm;
 	}
 	
 	private String getLineNum(Alarm alarm, String originLineNum) {
@@ -164,7 +163,7 @@ public class ResultUpdater {
 				e.printStackTrace();
 		}
 		
-		if(codes.get(lineNum-1).equals(alarm.getCode())) {
+		if(codes.size() > lineNum -1 && codes.get(lineNum-1).equals(alarm.getCode())) {
 			return alarm.getLineNum();
 		} else if(codes.size() > originLineNumber-1 && codes.get(originLineNumber-1).equals(alarm.getCode())) {
 			return originLineNum; 

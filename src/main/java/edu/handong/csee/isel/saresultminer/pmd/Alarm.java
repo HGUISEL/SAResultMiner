@@ -40,6 +40,14 @@ public class Alarm {
 		code = result.getOriginCode();
 	}
 	
+	public Alarm(Alarm alarm) {
+		this.detectionIDInResult = alarm.getDetectionIDInResult();
+		this.dir = alarm.dir;
+		this.lineNum = alarm.lineNum;
+		this.code = alarm.code;
+		this.status = alarm.status;
+	}
+	
 	public Alarm(String path, String lineNum, String code) {
 		dir = path;
 		this.lineNum = lineNum;
@@ -48,6 +56,10 @@ public class Alarm {
 	
 	public String getStatus() {
 		return status;
+	}
+	
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 	public int getDetectionIDInResult() {
@@ -60,6 +72,10 @@ public class Alarm {
 	
 	public String getDir() {
 		return dir;
+	}
+	
+	public void setDir(String dir) {
+		this.dir = dir;
 	}
 	
 	public String getLineNum() {
