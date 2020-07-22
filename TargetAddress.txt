@@ -1,1 +1,1 @@
-https://github.com/apache/johnzon.git
+https://github.com/apache/iceberg.git

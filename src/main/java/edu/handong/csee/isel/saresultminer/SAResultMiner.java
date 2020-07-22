@@ -110,7 +110,7 @@ public class SAResultMiner {
 			//1. find there are intersections between chagnedFiles and PMD reports			
 			//1-1. find their directory and changed info
 			//diff: get code of files which were changed
-			if(commits.get(i).getID().equals("e9679f8e14e4529ba742687913f2080bcd85e57a")) {
+			if(commits.get(i).getID().equals("c20927801a369104e5ea510470e1cf7c8e28b808")) {
 				System.out.println("break point");
 			}
 			
@@ -200,6 +200,7 @@ public class SAResultMiner {
 			comparator.init();
 			resultUpdater.init();
 			alarms.clear();
+			latestCommitID = "";
 			long end = System.currentTimeMillis();
 			//write updated pmd report and its codes
 			writer.writeResult(results, gitClone.getProjectName(), (end-start)/1000);
@@ -217,10 +218,10 @@ public class SAResultMiner {
 	    try{ 
 	        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
 	        
-	        Date FirstDate = format.parse(date1);
-	        Date SecondDate = format.parse(date2);
-	        	        
-	        long calDate = FirstDate.getTime() - SecondDate.getTime(); 
+	        Date firstDate = format.parse(date1);
+	        Date secondDate = format.parse(date2);
+	        
+	        long calDate = firstDate.getTime() - secondDate.getTime(); 
 	        	     
 	        long calDateDays = calDate / ( 24*60*60*1000); 
 	 

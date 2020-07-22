@@ -102,7 +102,10 @@ public class Writer {
 									.withHeader("Detection ID", "Latest Commit ID", "PMD Version", "Rule Name", "File Path", "Violation Introducing Commit ID", "VIC Date", "VIC Line Num.", "Latest Detection Commit ID", "LDC ID Date", "LDC Line Num.","Violation Fixed Commit ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", "Original Code", "Fixed Code", "Really Fixed?", "Time"));
 			) {		
 									
-			for(Result result : results) {										
+			for(Result result : results) {					
+				if(result.getFixedCode().length() >= 32000) {
+					result.setFixedCode(reduceCodeLength(result.getFixedCode(), result.getOriginCode()));
+				}
 				csvPrinter.printRecord(result.getDetectionID(), result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), result.getLDCID(), result.getLDCDate(), result.getLDCLineNum(), result.getVFCID(), result.getVFCDate(), result.getVFCLineNum(), result.getFixedPeriod(), result.getOriginCode(), result.getFixedCode(), "", time);				
 			}
 			writer.flush();
@@ -113,6 +116,63 @@ public class Writer {
 		long end = System.currentTimeMillis();
 		
 		System.out.println("INFO: Finish to Initialize Result File (" + (end - start)/1000 + " sec.)");
+	}
+	
+	private String reduceCodeLength(String fixedCode, String originCode) {
+		String[] codeLine = fixedCode.split("\n");
+		String code = "";
+		int idx = 0;
+		for(String tempCode : codeLine) {
+			idx++;
+			if(tempCode.replaceFirst("-","").trim().equals(originCode.trim())) {
+				break;
+			}			
+		}
+		
+		int start = 0;
+		int end = 0;			
+		
+		if(idx - 15 < 0) {
+			start = 0;
+		} else if (idx + 15 >= codeLine.length) {
+			end = codeLine.length - 1;
+		} else {
+			start = idx - 14;
+			end = idx + 14;
+		}
+		
+		for(int i = start; i < end; i ++) {
+			System.out.println("" + i + ": " + codeLine[i]);
+			code += codeLine[i] + "\n";
+		}
+		
+		idx = 0;
+		
+		for(String tempCode : codeLine) {
+			idx++;
+			if(tempCode.replaceFirst("\\+","").trim().equals(originCode.trim())) {
+				break;
+			}			
+			else if(tempCode.replaceFirst(" ","").trim().equals(originCode.trim())) {
+				break;
+			}
+		}
+		
+		if(idx - 15 < 0) {
+			start = 0;
+		} else if (idx + 15 >= codeLine.length) {
+			end = codeLine.length - 1;
+		} else {
+			start = idx - 15;
+			end = idx + 15;
+		}
+		
+		for(int i = start; i < end; i ++) {
+			System.out.println("" + i + ": " + codeLine[i]);
+			code += codeLine[i] + "\n";
+		}
+		
+		return code;
 	}
 	
 	public String getResult() {

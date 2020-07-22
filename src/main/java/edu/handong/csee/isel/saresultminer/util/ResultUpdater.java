@@ -57,11 +57,12 @@ public class ResultUpdater {
 					int sameCount = 0;
 					if(sameCodes.size() >= 2) {						
 						for(Alarm tempAlarm: unchangedAlarms) {
+							//Check Iceberg
 							if(tempAlarm.getDir().equals(alarm.getDir()) && tempAlarm.getCode().equals(alarm.getCode()) ) {
 								sameCount++;
 							}
 						}
-					}
+					}					
 					if(sameCodes.size() >= 1) {
 						alarm.setLineNum("" + sameCodes.get(sameCount));
 					}

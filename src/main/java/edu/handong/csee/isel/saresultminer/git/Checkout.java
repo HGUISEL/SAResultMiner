@@ -11,8 +11,8 @@ public class Checkout {
 	public void checkout(Git git, String commitID, int cnt) {
 		System.out.println("INFO: Checkout Start");
 		long start = System.currentTimeMillis();
-		try {
-			git.checkout().setName(commitID).call();
+		try {			
+			git.checkout().setForced(true).setName(commitID).call();
 		} catch (RefAlreadyExistsException e) {
 			e.printStackTrace();
 		} catch (RefNotFoundException e) {
