@@ -1,2 +1,0 @@
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/transforms/windowing/PaneInfo.java:222:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/transforms/windowing/PaneInfo.java:223:	Assigning an Object to null is a code smell.  Consider refactoring.

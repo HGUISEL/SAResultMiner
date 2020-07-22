@@ -1,6 +1,0 @@
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/io/BigQueryIO.java:344:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/io/BigQueryIO.java:742:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/io/BigQueryIO.java:743:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/io/BigQueryIO.java:744:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/io/DatastoreIO.java:739:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/runners/DirectPipelineRunner.java:706:	Assigning an Object to null is a code smell.  Consider refactoring.

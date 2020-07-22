@@ -1,6 +1,0 @@
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/runners/worker/ParDoFnBase.java:202:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/runners/worker/StreamingDataflowWorker.java:546:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/runners/worker/StreamingDataflowWorker.java:547:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/runners/worker/StreamingGroupAlsoByWindowsDoFn.java:134:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/runners/worker/WindmillStateInternals.java:197:	Assigning an Object to null is a code smell.  Consider refactoring.
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/runners/worker/WindmillStateInternals.java:385:	Assigning an Object to null is a code smell.  Consider refactoring.

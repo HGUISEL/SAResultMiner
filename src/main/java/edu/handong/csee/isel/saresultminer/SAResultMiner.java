@@ -39,7 +39,7 @@ public class SAResultMiner {
 		//@param pmd command location
 		PMD pmd = new PMD("./pmd-bin-6.25.0/bin/run.sh");
 		String pmdVersion = "6.25";
-		String rule = "category/java/errorprone.xml/NullAssignment";
+		String rule = "category/java/errorprone.xml/InvalidLogMessageFormat";
 		ArrayList<Alarm> alarms = new ArrayList<>();
 		
 		//utils instances
@@ -147,7 +147,7 @@ public class SAResultMiner {
 			String changedFilesListPath = writer.writeChangedFiles(changedFiles, commits.get(i).getID(), i, gitClone.getProjectName());
 						
 			//apply pmd to changed files						
-			pmd.executeToChangedFiles(commits.get(i).getID(), changedFilesListPath, i, gitClone.getProjectName());
+			pmd.executeToChangedFiles(rule, commits.get(i).getID(), changedFilesListPath, i, gitClone.getProjectName());
 			alarms = new ArrayList<Alarm>();
 			alarms.addAll(reader.readReportFile(pmd.getReportPath()));
 			

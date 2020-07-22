@@ -1,1 +1,0 @@
-/Users/yoonho/Documents/ISEL/SAResultMiner/TargetProjects/beam/sdk/src/main/java/com/google/cloud/dataflow/sdk/runners/worker/logging/DataflowWorkerLoggingInitializer.java:131:	Assigning an Object to null is a code smell.  Consider refactoring.

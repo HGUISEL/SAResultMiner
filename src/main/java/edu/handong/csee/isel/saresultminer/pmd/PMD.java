@@ -51,7 +51,7 @@ public class PMD {
 		System.out.println("INFO: PMD Report Is Generated Commit ID: " + commitID + "(" + (end-start)/1000 + " sec.)");
 	}
 	
-	public void executeToChangedFiles(String commitID, String filePaths, int cnt, String projectName) {		
+	public void executeToChangedFiles(String rule, String commitID, String filePaths, int cnt, String projectName) {		
 		File newDir = new File("./PMDReports");
 		if(!newDir.exists()) {
 			newDir.mkdir();
@@ -74,7 +74,7 @@ public class PMD {
 		cmdLine.addArgument("-filelist");
 		cmdLine.addArgument(filePaths);
 		cmdLine.addArgument("-R");
-		cmdLine.addArgument("category/java/errorprone.xml/NullAssignment");
+		cmdLine.addArgument(rule);
 		cmdLine.addArgument("-reportfile");
 		cmdLine.addArgument("./PMDReports/"+projectName+ File.separator + cnt + "_" + commitID+".csv");
 		DefaultExecutor executor = new DefaultExecutor();
