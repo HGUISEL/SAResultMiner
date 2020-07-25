@@ -39,7 +39,7 @@ public class SAResultMiner {
 		//@param pmd command location
 		PMD pmd = new PMD("./pmd-bin-6.25.0/bin/run.sh");
 		String pmdVersion = "6.25";
-		String rule = "category/java/errorprone.xml/InvalidLogMessageFormat";
+		String rule = "category/java/errorprone.xml/MissingStaticMethodInNonInstantiatableClass";
 		ArrayList<Alarm> alarms = new ArrayList<>();
 		
 		//utils instances
