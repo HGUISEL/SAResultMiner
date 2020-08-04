@@ -1,1 +1,1 @@
-https://github.com/apache/isis.git
+https://github.com/apache/openmeetings
