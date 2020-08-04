@@ -12,7 +12,7 @@ public class Checkout {
 		System.out.println("INFO: Checkout Start");
 		long start = System.currentTimeMillis();
 		try {			
-			git.checkout().setForced(true).setName(commitID).call();
+			git.checkout().setForceRefUpdate(true).setForced(true).setName(commitID).call();
 		} catch (RefAlreadyExistsException e) {
 			e.printStackTrace();
 		} catch (RefNotFoundException e) {

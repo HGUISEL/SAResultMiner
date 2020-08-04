@@ -9,7 +9,7 @@ ChangedFilesList/
 .classpath
 .gitattributes
 *.project
-TargetProjects/
+TargetProjects/*
 gradlew
 gradlew.bat
 settings.gradle

@@ -100,6 +100,7 @@ public class Diff {
 //	        formatter.setRepository(git.getRepository());
 //	        formatter.format(oldTreeIterator, newTreeIterator);	        
 //	    }
+	    
 	    String diff = outputStream.toString();
 	    return diff;
 	}

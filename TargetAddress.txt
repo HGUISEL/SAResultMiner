@@ -1,1 +1,1 @@
-https://github.com/apache/camel-k-runtime.git
+https://github.com/apache/isis.git
