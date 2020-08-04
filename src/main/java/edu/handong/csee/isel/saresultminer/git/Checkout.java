@@ -20,7 +20,8 @@ public class Checkout {
 		long start = System.currentTimeMillis();
 //		try {
 		try {				
-			CommandLine cmdLine = new CommandLine("git checkout");
+			CommandLine cmdLine = new CommandLine("git");
+			cmdLine.addArgument("checkout");
 			cmdLine.addArgument("-f");
 			cmdLine.addArgument(commitID);
 			cmdLine.addArgument("--quiet");
