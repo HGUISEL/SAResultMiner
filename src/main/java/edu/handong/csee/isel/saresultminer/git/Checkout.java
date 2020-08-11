@@ -1,6 +1,7 @@
 package edu.handong.csee.isel.saresultminer.git;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
@@ -11,7 +12,8 @@ public class Checkout {
 	public void checkout(Git git, String commitID, int cnt) {
 		System.out.println("INFO: Checkout Start");
 		long start = System.currentTimeMillis();
-		try {			
+		try {
+			git.reset().setMode(ResetType.HARD).call();
 			git.checkout().setForced(true).setName(commitID).call();
 		} catch (RefAlreadyExistsException e) {
 			e.printStackTrace();
