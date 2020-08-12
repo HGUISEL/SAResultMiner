@@ -70,17 +70,21 @@ public class Writer {
 	}
 	
 	public void initResult(ArrayList<Result> results, String projectName) {
-		String fileName = "./" + projectName + "_Result.csv";
+//		String fileName = "./" + projectName + "_Result.csv";
+		String fileName = "./SAResultMiner_Result.csv";
 		System.out.println("INFO: Start to Initialize Result File");
 		long start = System.currentTimeMillis();
 		try(
 			BufferedWriter writer = Files.newBufferedWriter(Paths.get(fileName));
 			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-									.withHeader("Detection ID", "Latest Commit ID", "PMD Version", "Rule Name", "File Path", "Violation Introducing Commit ID", "VIC Date", "VIC Line Num.", "Latest Detection Commit ID", "LDC ID Date", "LDC Line Num.","Violation Fixed Commit ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", "Original Code", "Fixed Code", "Really Fixed?"));
+									.withHeader("Detection ID", "Project Name","Latest Commit ID", "PMD Version", "Rule Name", "File Path", "Violation Introducing Commit ID", "VIC Date", "VIC Line Num.", "Latest Detection Commit ID", "LDC ID Date", "LDC Line Num.","Violation Fixed Commit ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", "Original Code", "Fixed Code", "Really Fixed?"));
 			) {		
 									
-			for(Result result : results) {				
-				csvPrinter.printRecord(result.getDetectionID(), result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), "", "", "", "", "", "", "", result.getOriginCode(), "", "");				
+			for(Result result : results) {
+				if(result.getProjectName().equals(""))
+					csvPrinter.printRecord(result.getDetectionID(), projectName, result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), "", "", "", "", "", "", "", result.getOriginCode(), "", "");
+				else 
+					csvPrinter.printRecord(result.getDetectionID(), result.getProjectName(), result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), "", "", "", "", "", "", "", result.getOriginCode(), "", "");
 			}
 			writer.flush();
 			writer.close();
@@ -93,20 +97,24 @@ public class Writer {
 	}
 	
 	public void writeResult(ArrayList<Result> results, String projectName, long time) {
-		String fileName = "./" + projectName + "_Result.csv";
+//		String fileName = "./" + projectName + "_Result.csv";
+		String fileName = "./SAResultMiner_Result.csv";
 		System.out.println("INFO: Start to Initialize Result File");
 		long start = System.currentTimeMillis();
 		try(
 			BufferedWriter writer = Files.newBufferedWriter(Paths.get(fileName));
 			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-									.withHeader("Detection ID", "Latest Commit ID", "PMD Version", "Rule Name", "File Path", "Violation Introducing Commit ID", "VIC Date", "VIC Line Num.", "Latest Detection Commit ID", "LDC ID Date", "LDC Line Num.","Violation Fixed Commit ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", "Original Code", "Fixed Code", "Really Fixed?", "Time"));
+									.withHeader("Detection ID", "Project Name", "Latest Commit ID", "PMD Version", "Rule Name", "File Path", "Violation Introducing Commit ID", "VIC Date", "VIC Line Num.", "Latest Detection Commit ID", "LDC ID Date", "LDC Line Num.","Violation Fixed Commit ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", "Original Code", "Fixed Code", "Really Fixed?", "Time"));
 			) {		
 									
 			for(Result result : results) {					
 				if(result.getFixedCode().length() >= 32000) {
 					result.setFixedCode(reduceCodeLength(result.getFixedCode(), result.getOriginCode()));
 				}
-				csvPrinter.printRecord(result.getDetectionID(), result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), result.getLDCID(), result.getLDCDate(), result.getLDCLineNum(), result.getVFCID(), result.getVFCDate(), result.getVFCLineNum(), result.getFixedPeriod(), result.getOriginCode(), result.getFixedCode(), "", time);				
+				if(result.getProjectName().equals(""))
+					csvPrinter.printRecord(result.getDetectionID(), projectName, result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), result.getLDCID(), result.getLDCDate(), result.getLDCLineNum(), result.getVFCID(), result.getVFCDate(), result.getVFCLineNum(), result.getFixedPeriod(), result.getOriginCode(), result.getFixedCode(), "", time);
+				else
+					csvPrinter.printRecord(result.getDetectionID(), result.getProjectName(), result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), result.getLDCID(), result.getLDCDate(), result.getLDCLineNum(), result.getVFCID(), result.getVFCDate(), result.getVFCLineNum(), result.getFixedPeriod(), result.getOriginCode(), result.getFixedCode(), "", time);
 			}
 			writer.flush();
 			writer.close();

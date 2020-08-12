@@ -20,7 +20,7 @@ public class Log {
 		try {
 			Iterable<RevCommit> logs1 = git.log().call();
 			Iterable<RevCommit> logs2 = git.log().call();
-			
+			latestCommitId = "";
 			int first = 0;			
 			for(RevCommit commit : logs1) {				
 				if(first == 0) {
