@@ -23,7 +23,8 @@ public class Result {
 	String VFCLineNum = "";
 	String fixedPeriod = "";
 	String originCode = "";
-	String fixedCode = "";		
+	String fixedCode = "";	
+	String reallyFixed = "";
 	
 	//init
 	public Result(int detectionID, String prjName, String LCID, String PMDVer, String ruleName, String filePath, String VICID, String VICDate, String VICLineNum, String originCode) {
@@ -40,6 +41,14 @@ public class Result {
 	}
 	
 	//getters setters
+	public void setReallyFixed(String reallyFixed) {
+		this.reallyFixed = reallyFixed;
+	}
+	
+	public String getReallyFixed() {
+		return reallyFixed;
+	}
+	
 	public int getDetectionID() {
 		return detectionID;
 	}

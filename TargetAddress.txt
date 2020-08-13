@@ -1,3 +1,5 @@
-https://github.com/apache/servicemix
-https://github.com/apache/commons-bsf
-https://github.com/apache/commons-jci
+https://github.com/apache/creadur-rat
+https://github.com/apache/commons-proxy
+https://github.com/apache/commons-jxpath
+https://github.com/apache/commons-ognl
+https://github.com/apache/commons-exec

@@ -39,7 +39,7 @@ public class SAResultMiner {
 		//@param pmd command location
 		PMD pmd = new PMD("./pmd-bin-6.25.0/bin/run.sh");
 		String pmdVersion = "6.25";
-		String rule = "category/java/errorprone.xml/NullAssignment";
+		String rule = "category/java/errorprone.xml/InvalidLogMessageFormat";
 		ArrayList<Alarm> alarms = new ArrayList<>();
 		
 		//utils instances
@@ -157,7 +157,11 @@ public class SAResultMiner {
 							tempResult.setVFCLineNum(fixedAlarm.getLineNum());
 							tempResult.setVFCDate(commits.get(i).getTime());
 							tempResult.setFixedPeriod(calDate(tempResult.getVFCDate(), tempResult.getVICDate()));
-							tempResult.setFixedCode(fixedAlarm.getCode());	
+							tempResult.setFixedCode(fixedAlarm.getCode());
+							if(fixedAlarm.getLineNum().equals("0"))
+								tempResult.setReallyFixed("File Deletion");
+							else
+								tempResult.setReallyFixed("");
 							results.set(j, tempResult);
 							break;
 						}
@@ -173,6 +177,7 @@ public class SAResultMiner {
 							tempResult.setLDCID(commits.get(i).getID());
 							tempResult.setLDCLineNum(maintainedAlarm.getLineNum());
 							tempResult.setLDCDate(commits.get(i).getTime());	
+							tempResult.setReallyFixed("FPC");
 							results.set(j, tempResult);
 							break;
 						}
