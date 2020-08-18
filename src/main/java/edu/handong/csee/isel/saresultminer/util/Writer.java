@@ -81,6 +81,14 @@ public class Writer {
 			) {		
 									
 			for(Result result : results) {
+				
+				if(result.getVFCLineNum().equals("0"))
+					result.setReallyFixed("File Deletion");
+				else if(result.getVFCID().equals(""))
+					result.setReallyFixed("FPC");
+				else if(!result.getVFCID().equals(""))
+					result.setReallyFixed("");
+				
 				if(result.getProjectName().equals(""))
 					csvPrinter.printRecord(result.getDetectionID(), projectName, result.getLCID(), result.getPMDVer(), result.getRuleName(), result.getFilePath(), result.getVICID(), result.getVICDate(), result.getVICLineNum(), "", "", "", "", "", "", "", result.getOriginCode(), "", result.getReallyFixed(), "");
 				else 
@@ -107,7 +115,15 @@ public class Writer {
 									.withHeader("Detection ID", "Project Name", "Latest Commit ID", "PMD Version", "Rule Name", "File Path", "Violation Introducing Commit ID", "VIC Date", "VIC Line Num.", "Latest Detection Commit ID", "LDC ID Date", "LDC Line Num.","Violation Fixed Commit ID", "VFC Date", "VFC Line Num.", "Fixed Period(day)", "Original Code", "Fixed Code", "Really Fixed?", "Time"));
 			) {		
 									
-			for(Result result : results) {					
+			for(Result result : results) {
+				
+				if(result.getVFCLineNum().equals("0"))
+					result.setReallyFixed("File Deletion");
+				else if(result.getVFCID().equals(""))
+					result.setReallyFixed("FPC");
+				else if(!result.getVFCID().equals(""))
+					result.setReallyFixed("");
+				
 				if(result.getFixedCode().length() >= 32000) {
 					result.setFixedCode(reduceCodeLength(result.getFixedCode(), result.getOriginCode()));
 				}

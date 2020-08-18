@@ -39,7 +39,7 @@ public class SAResultMiner {
 		//@param pmd command location
 		PMD pmd = new PMD("./pmd-bin-6.25.0/bin/run.sh");
 		String pmdVersion = "6.25";
-		String rule = "category/java/errorprone.xml/InvalidLogMessageFormat";
+		String rule = "category/java/errorprone.xml/NullAssignment";
 		ArrayList<Alarm> alarms = new ArrayList<>();
 		
 		//utils instances
@@ -105,9 +105,13 @@ public class SAResultMiner {
 					if(!result.getProjectName().equals(gitClone.getProjectName())) continue;
 					alarmsInResult.add(new Alarm(result));
 				}			
-			
+				
 				//checkout current +1			
 				gitCheckout.checkout(git, commits.get(i).getID(), i);			
+				
+				if(commits.get(i).getID().equals("621fda15997534db72a0c38d53d963acb5b07838")) {
+					System.out.println("Break");
+				}
 				
 				//1. find there are intersections between chagnedFiles and PMD reports			
 				//1-1. find their directory and changed info
@@ -158,10 +162,6 @@ public class SAResultMiner {
 							tempResult.setVFCDate(commits.get(i).getTime());
 							tempResult.setFixedPeriod(calDate(tempResult.getVFCDate(), tempResult.getVICDate()));
 							tempResult.setFixedCode(fixedAlarm.getCode());
-							if(fixedAlarm.getLineNum().equals("0"))
-								tempResult.setReallyFixed("File Deletion");
-							else
-								tempResult.setReallyFixed("");
 							results.set(j, tempResult);
 							break;
 						}
@@ -176,8 +176,7 @@ public class SAResultMiner {
 						if(tempResult.getDetectionID() == maintainedAlarm.getDetectionIDInResult()) {
 							tempResult.setLDCID(commits.get(i).getID());
 							tempResult.setLDCLineNum(maintainedAlarm.getLineNum());
-							tempResult.setLDCDate(commits.get(i).getTime());	
-							tempResult.setReallyFixed("FPC");
+							tempResult.setLDCDate(commits.get(i).getTime());								
 							results.set(j, tempResult);
 							break;
 						}

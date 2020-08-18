@@ -23,11 +23,12 @@ public class ResultUpdater {
 		if(alarms.size() == 0 || changes.size() == 0) {
 			return;
 		} else {
+			changed:
 			for(Alarm alarm : alarms) {
 				if(alarm.getStatus().equals("VFC")) continue;
 				String originAlarmedLine = "" + alarm.getLineNum().trim();
 				Alarm classifiedAlarm = new Alarm();
-				int cnt = 0;
+//				int cnt = 0;
 				int flag = 0;
 				for(ChangeInfo change : changes) {
 					if(alarm.getDir().trim().equals(change.getDir())) {						
@@ -39,20 +40,20 @@ public class ResultUpdater {
 								alarm.setLineNum("0");
 								alarm.setCode("FILE IS DELETED");
 								changedAlarms.add(alarm);
-								break;
+								continue changed;
 							} else {
 							//line is deleted
 							alarm.setLineNum("-1");
 							alarm.setCode(change.getChangedCode());
 							changedAlarms.add(alarm);
-							break;
+							continue changed;
 							}							
 						}
 					}
-					cnt ++;
+//					cnt ++;
 				}
 				flag = 0;
-				if(changes.size() == cnt) {
+//				if(changes.size() == cnt) {
 					getLineNum(alarm, originAlarmedLine);
 					int sameCount = 0;
 					if(sameCodes.size() >= 2) {						
@@ -64,10 +65,18 @@ public class ResultUpdater {
 						}
 					}					
 					if(sameCodes.size() >= 1) {
+						if(sameCount >= sameCodes.size()) {
+							sameCount = sameCodes.size() - 1;
+						}
 						alarm.setLineNum("" + sameCodes.get(sameCount));
 					}
+//					for(Alarm tempAlarm : unchangedAlarms) {
+//						if(tempAlarm.getDir().equals(alarm.getDir()) && tempAlarm.getCode().equals(alarm.getCode()) && tempAlarm.getLineNum().equals(alarm.getLineNum())) {
+//							continue;
+//						}
+//					}
 					unchangedAlarms.add(alarm);
-				}
+//				}
 			}
 		}
 	}
